@@ -13,5 +13,7 @@ EXTRAKEY_ENABLE = yes
 WPM_ENABLE = yes
 # TERMINAL_ENABLE = yes
 
+ENCODER_ENABLE = no
+ENCODER_MAP_ENABLE = no
 
 SRC += ddrcode.c

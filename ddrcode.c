@@ -57,3 +57,13 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     }
 }
 #endif
+
+
+#if defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
+const uint16_t PROGMEM encoder_map[][1][2] = {
+    { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
+    { ENCODER_CCW_CW(RGB_VAD, RGB_VAI) },
+    { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
+    { ENCODER_CCW_CW(RGB_VAD, RGB_VAI) }
+};
+#endif
