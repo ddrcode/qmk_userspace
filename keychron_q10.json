@@ -1,0 +1,15 @@
+{
+    "author": "",
+    "documentation": "Wrapper based keymap",
+    "keyboard": "keychron/q10/q10_ansi_stm32l432_ec11",
+    "keymap": "ddrcode",
+    "layers": [
+        [ "DDR_Q10_QWERTY" ],
+        [ "DDR_Q10_DEFAULT" ],
+        [ "DDR_Q10_COLEMAK" ],
+        [ "DDR_Q10_SYMBOLS" ]
+    ],
+    "layout": "LAYOUT_ansi_89_wrapper",
+    "notes": "",
+    "version": 1
+}
