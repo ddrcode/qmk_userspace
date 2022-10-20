@@ -49,7 +49,7 @@
                                 KC_TAB,   DDR_COLEMAK_TOP_ROW, KC_SCLN,  S(KC_SCLN), KC_RBRC, OSL(3),     KC_DEL,  KC_END,   KC_PGDN, \
                                 KC_BSPC,  DDR_COLEMAK_MID_ROW, KC_QUOT, KC_ENT, \
                                 KC_LSFT,  DDR_COLEMAK_LOW_ROW, KC_RSFT,                                            KC_UP, \
-                                OSM(KC_LCTL),OSM(KC_LWIN),OSM(KC_LALT), KC_SPC, OSM(KC_RALT), OSL(3), OSM(KC_RWIN),OSM(KC_RCTL), KC_LEFT, KC_DOWN,  KC_RGHT
+                                OSM(MOD_LCTL),OSM(MOD_LWIN),OSM(MOD_LALT), KC_SPC, OSM(MOD_RALT), OSL(3), OSM(MOD_RWIN),OSM(MOD_RCTL), KC_LEFT, KC_DOWN,  KC_RGHT
 
 #define DDR_Q3_EMPTY \
         _______,            _______,  _______,    _______,    _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,  _______,  _______, \
@@ -67,7 +67,11 @@
         _______,            S(KC_6),  S(KC_BSLS), KC_LBRC,    KC_RBRC,   S(KC_GRV),S(KC_5),  _______,  _______,  KC_BSLS,  _______,              _______,            _______,           \
         _______,  _______,  _______,                                     _______,                                _______,  _______,  _______,    _______,  _______,  _______,  _______
 
-/* Keychron Q10 */
+
+/***************************************************************************************************************************************************************************************
+    Keychron Q10
+    @see https://github.com/Keychron/qmk_firmware/tree/playground/keyboards/keychron/q10
+ ***************************************************************************************************************************************************************************************/
 
 #define DDR_Q10_QWERTY \
         KC_MUTE,  KC_ESC,   DDR_FN_ROW,             KC_END,  KC_DEL,  \
@@ -80,10 +84,10 @@
 #define DDR_Q10_COLEMAK \
         KC_MUTE,  KC_ESC,   DDR_FN_ROW,             KC_END,  KC_DEL,  \
         DF(0),    KC_GRV,   DDR_NUM_ROW,            KC_MINS, KC_EQL, KC_BSPC, KC_PGUP, \
-        _______,  KC_TAB,   DDR_COLEMAK_TOP_ROW,    KC_SCLN, S(KC_SCLN),  KC_RBRC,  KC_BSLS, KC_PGDN, \
+        _______,  KC_TAB,   DDR_COLEMAK_TOP_ROW,    KC_SCLN, S(KC_SCLN),  KC_RBRC,  TO(4), KC_PGDN, \
         _______,  KC_BSPC,  DDR_COLEMAK_MID_ROW,    KC_QUOT, KC_ENT, KC_HOME, \
-        _______,  OSM(MOD_LSFT),  DDR_COLEMAK_LOW_ROW_L,  KC_B,    DDR_COLEMAK_LOW_ROW_R, OSM(MOD_RSFT),  KC_UP, \
-        _______,  OSM(MOD_LCTL),  OSM(MOD_LGUI), OSM(MOD_LALT), KC_SPC,  OSL(3), KC_SPC, OSM(MOD_RALT), KC_LEFT,  KC_DOWN,  KC_RGHT
+        _______,  OSM(MOD_LSFT),  DDR_COLEMAK_LOW_ROW_L,  KC_ESC,    DDR_COLEMAK_LOW_ROW_R, OSM(MOD_RSFT),  KC_UP, \
+        _______,  OSM(MOD_LCTL),  OSM(MOD_LGUI), OSM(MOD_LALT), LT(4,KC_SPC),  OSL(3), OSM(MOD_RSFT), OSM(MOD_RALT), KC_LEFT,  KC_DOWN,  KC_RGHT
 
 #define DDR_Q10_DEFAULT \
         KC_MUTE,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   KC_INS,             KC_DEL,  \
@@ -91,7 +95,7 @@
         _______,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_PGDN, \
         _______,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,             KC_HOME, \
         _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_RSFT,  KC_UP,             \
-        _______,  KC_LCTL,  KC_LCMD,            KC_LALT,  KC_SPC,   KC_NO,                     KC_SPC,             KC_RALT,                      KC_LEFT,  KC_DOWN,  KC_RGHT
+        _______,  KC_LCTL,  KC_LCMD,            KC_LALT,  KC_SPC,   KC_NO,                     KC_SPC,             KC_RALT,                          KC_LEFT,  KC_DOWN,  KC_RGHT
 
 
 #define DDR_Q10_SYMBOLS \
@@ -100,4 +104,12 @@
         _______,  _______,                                              DDR_SYMBOLS_TOP_ROW,                                     _______,  _______,  _______,            _______, \
         _______,  _______,                                              DDR_SYMBOLS_MID_ROW,                                     _______,            _______,            _______, \
         _______,  _______,            DDR_SYMBOLS_LOW_ROW_L,                             _______,            DDR_SYMBOLS_LOW_ROW_R,                  _______,  _______,           \
+        _______,  _______,  _______,            _______,  _______,  _______,                       _______,            KC_P0,                        _______,  _______,  _______
+
+#define DDR_Q10_NAV \
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______, \
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______, \
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  KC_UP,    _______,  _______,  _______,  _______,  _______,            _______, \
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   MO(1),    KC_LEFT,  KC_DOWN,  KC_RIGHT, _______,  _______,            _______,            _______, \
+        _______,            _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,           \
         _______,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______
