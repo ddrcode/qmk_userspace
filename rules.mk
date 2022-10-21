@@ -23,13 +23,29 @@ else
     CONSOLE_ENABLE = yes
 endif
 
+SRC += ddrcode.c
+
 ifeq ($(strip $(KEYBOARD)),keychron/q10/q10_ansi_stm32l432_ec11)
     # settings for boards with encoder
     $(info [ddrcode/rules.mk] applying encoder settings)
     ENCODER_ENABLE = yes
     ENCODER_MAP_ENABLE = no
+    SRC += features/encoder.c
 endif
 
-SRC += ddrcode.c
+ifneq ("$(wildcard $(USER_PATH)/features/secrets.c)", "")
+    $(info [ddrcode/rules.mk] including secrets.c)
+	SRC += features/secrets.c
+endif
+
+ifeq ($(strip $(KEY_OVERRIDE_ENABLE)), yes)
+    $(info [ddrcode/rules.mk] including key_overrides.c)
+    src += features/key_overrides.c
+endif
+
+ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)
+    $(info [ddrcode/rules.mk] including rgb_matrix.c)
+    src += features/rgb_matrix.c
+endif
 
 $(info [ddrcode/rules.mk] end)

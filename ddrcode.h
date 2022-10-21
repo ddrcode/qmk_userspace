@@ -4,5 +4,4 @@
 #include "action.h"
 #include "version.h"
 
-
-
+enum layerNames { QWERTY, COLEMAK, DEFAULT, SYMBOLS, NAVIGATION };
