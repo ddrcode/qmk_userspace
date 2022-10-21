@@ -5,7 +5,7 @@ AUTO_SHIFT_ENABLE = no
 CAPS_WORD_ENABLE = no
 SEND_STRING_ENABLE = yes
 KEY_OVERRIDE_ENABLE = yes
-# BOOTMAGIC_ENABLE = no
+BOOTMAGIC_ENABLE = no
 # TERMINAL_ENABLE = yes
 
 $(info [ddrcode/rules.mk] start for keyboard: $(strip $(KEYBOARD)))
@@ -15,6 +15,8 @@ ifneq ($(filter $(strip $(KEYBOARD)),converter/usb_usb/hasu idobao/id75/v1),)
     $(info [ddrcode/rules.mk] applying ram<=32kB settings)
     MOUSEKEY_ENABLE = no
     POINTING_DEVICE_ENABLE = no
+    CONSOLE_ENABLE = no
+    EXTRAKEY_ENABLE = no
 else
     # settings for boards with more RAM
     $(info [ddrcode/rules.mk] applying ram>32kB settings)
