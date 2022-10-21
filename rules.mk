@@ -17,6 +17,10 @@ ifneq ($(filter $(strip $(KEYBOARD)),converter/usb_usb/hasu idobao/id75/v1),)
     POINTING_DEVICE_ENABLE = no
     CONSOLE_ENABLE = no
     EXTRAKEY_ENABLE = no
+    SPACE_CADET_ENABLE = no
+    GRAVE_ESC_ENABLE = no 
+    MAGIC_ENABLE = no
+    EXTRAFLAGS += -flto
 else
     # settings for boards with more RAM
     $(info [ddrcode/rules.mk] applying ram>32kB settings)

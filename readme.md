@@ -19,6 +19,11 @@ This userspace supports the following keyboards:
 - VIM layer (see [here](https://github.com/qmk/qmk_firmware/tree/master/keyboards/ergodox_ez/keymaps/vim) and [here](https://github.com/Zindar/qmk_firmware/tree/master/keyboards/zindar12x5) for inspirations)
 - Add more keyboards: Planck and Ergodox
 
+## Firmware size optimization
+Two of my boards: Hasu USB_USB converter and Idobao ID75 are equipped with 32kB of RAM only. By following
+[these steps](https://docs.qmk.fm/#/squeezing_avr?id=squeezing-the-most-out-of-avr)
+I was able to reduce the file size by up to 7kB. 
+
 ## Copyrights
 
 Copyright 2022 @ddrcode
