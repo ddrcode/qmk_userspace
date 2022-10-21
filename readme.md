@@ -9,9 +9,15 @@ This userspace supports the following keyboards:
 - Hasu USB-USB Converterr
 - Idobao ID75
 
-## Credits and links
-- [Filterpaper](https://filterpaper.github.io/qmk/userspace.html)
+## Credits 
+- [Filterpaper Notes on Userspaces](https://filterpaper.github.io/qmk/userspace.html)
 - [Userspace (QMK documentation)](https://docs.qmk.fm/#/feature_userspace)
+- [tominabox1 userspace](https://github.com/qmk/qmk_firmware/tree/master/users/tominabox1)
+- [drashna userspace](https://github.com/qmk/qmk_firmware/tree/master/users/drashna)
+
+## Future/planned work
+- VIM layer (see [here](https://github.com/qmk/qmk_firmware/tree/master/keyboards/ergodox_ez/keymaps/vim) and [here](https://github.com/Zindar/qmk_firmware/tree/master/keyboards/zindar12x5) for inspirations)
+- Add more keyboards: Planck and Ergodox
 
 ## Copyrights
 
