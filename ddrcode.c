@@ -24,9 +24,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(wpm_buff);
 #endif
                 break;
+#ifdef DDR_BIG_MEMORY  
             case CKC_LL:
                 SEND_STRING("ls -al\n");
                 break;
+#endif
         }
     }
     return process_secrets(keycode, record) && process_record_keymap(keycode, record);

@@ -5,7 +5,7 @@ AUTO_SHIFT_ENABLE = no
 CAPS_WORD_ENABLE = no
 SEND_STRING_ENABLE = yes
 KEY_OVERRIDE_ENABLE = yes
-BOOTMAGIC_ENABLE = no
+# BOOTMAGIC_ENABLE = no
 # TERMINAL_ENABLE = yes
 
 $(info [ddrcode/rules.mk] start for keyboard: $(strip $(KEYBOARD)))
@@ -23,6 +23,7 @@ else
     WPM_ENABLE = yes
     EXTRAKEY_ENABLE = yes
     CONSOLE_ENABLE = yes
+    DDR_BIG_MEMORY = yes
 endif
 
 SRC += ddrcode.c
