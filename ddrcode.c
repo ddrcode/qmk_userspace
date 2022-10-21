@@ -19,7 +19,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         switch (keycode) {
         case CKC_JP:
-            SEND_STRING("Qikitarjurak2022\n");
+            SEND_STRING("ls -al\n");
             break;
         case CKC_BL:
             default_layer_set(default_layer_state == 1 ? (1<<2) : 1);
