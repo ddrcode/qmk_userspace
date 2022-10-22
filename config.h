@@ -18,7 +18,6 @@
     #define LAYER_STATE_8BIT         // alow max 8 layers
     #define NO_ACTION_MACRO          // no macros
     #define NO_ACTION_FUNCTION       // no functions
-    #define NO_ACTION_TAPPING        // no tapping
     #undef LOCKING_SUPPORT_ENABLE    // don't use it if you have cherry MX lock switches
     #undef LOCKING_RESYNC_ENABLE
 #endif
