@@ -10,9 +10,10 @@ KEY_OVERRIDE_ENABLE = yes
 
 $(info [ddrcode/rules.mk] start for keyboard: $(strip $(KEYBOARD)))
 
-ifneq ($(filter $(strip $(KEYBOARD)),converter/usb_usb/hasu idobao/id75/v1),)
+ifneq ($(filter $(strip $(KEYBOARD)),converter/usb_usb/hasu idobao/id75/v2),)
     # settings for boards with 32kB of RAM
     $(info [ddrcode/rules.mk] applying ram<=32kB settings)
+    AVR_USE_MINIMAL_PRINTF = yes
     MOUSEKEY_ENABLE = no
     POINTING_DEVICE_ENABLE = no
     CONSOLE_ENABLE = no
@@ -20,6 +21,7 @@ ifneq ($(filter $(strip $(KEYBOARD)),converter/usb_usb/hasu idobao/id75/v1),)
     SPACE_CADET_ENABLE = no
     GRAVE_ESC_ENABLE = no 
     MAGIC_ENABLE = no
+    RGB_MATRIX_ENABLE = no  # for idobao 75
     EXTRAFLAGS += -flto
 else
     # settings for boards with more RAM
@@ -30,6 +32,7 @@ else
     DDR_BIG_MEMORY = yes
 endif
 
+SRC += features/system.c
 SRC += ddrcode.c
 
 ifeq ($(strip $(KEYBOARD)),keychron/q10/q10_ansi_stm32l432_ec11)
