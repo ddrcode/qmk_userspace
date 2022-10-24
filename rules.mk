@@ -32,7 +32,6 @@ else
     DDR_BIG_MEMORY = yes
 endif
 
-SRC += features/system.c
 SRC += ddrcode.c
 
 ifeq ($(strip $(KEYBOARD)),keychron/q10/q10_ansi_stm32l432_ec11)
