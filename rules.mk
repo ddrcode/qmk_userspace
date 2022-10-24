@@ -26,6 +26,7 @@ ifneq ($(filter $(strip $(KEYBOARD)),converter/usb_usb/hasu idobao/id75/v2),)
 else
     # settings for boards with more RAM
     $(info [ddrcode/rules.mk] applying ram>32kB settings)
+    CONSOLE_ENABLE = yes
     WPM_ENABLE = yes
     EXTRAKEY_ENABLE = yes
     CONSOLE_ENABLE = yes
@@ -52,9 +53,6 @@ ifeq ($(strip $(KEY_OVERRIDE_ENABLE)), yes)
     src += features/key_overrides.c
 endif
 
-ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)
-    $(info [ddrcode/rules.mk] including rgb_matrix.c)
-    src += features/rgb_matrix.c
-endif
+
 
 $(info [ddrcode/rules.mk] end)

@@ -40,19 +40,19 @@
     @see https://github.com/Keychron/qmk_firmware/tree/keychron-q3/keyboards/keychron/q3
  ***************************************************************************************************************************************************************************************/
 
-#define DDR_Q3_QWERTY           KC_ESC,   DDR_FN_ROW,                                                     QK_BOOT,   KC_NO,    RGB_MOD, \
+#define DDR_Q3_QWERTY           KC_ESC,   KC_F1, DF(1), KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, KC_NO, KC_NO, RGB_MOD, \
                                 KC_GRV,   DDR_NUM_ROW,         KC_MINS,  KC_EQL,  KC_BSPC,                KC_INS,  KC_HOME,  KC_PGUP, \
                                 KC_TAB,   DDR_QWERTY_TOP_ROW,  KC_LBRC,  KC_RBRC, KC_BSLS,                KC_DEL,  KC_END,   KC_PGDN, \
                                 KC_BSPC,  DDR_QWERTY_MID_ROW,  KC_SCLN,  KC_QUOT, KC_ENT, \
                                 KC_LSFT,  DDR_QWERTY_LOW_ROW,  KC_RSFT,                                            KC_UP, \
-                                KC_LCTL,  KC_LCMD,  KC_LOPT, KC_SPC, KC_ROPT, OSL(3),KC_RCMD, KC_RCTL,    KC_LEFT, KC_DOWN,  KC_RGHT
+                                KC_LCTL,  KC_LCMD,  KC_LOPT, LT(3,KC_SPC), KC_ROPT, OSL(3),KC_RCMD, KC_RCTL,    KC_LEFT, KC_DOWN,  KC_RGHT
 
-#define DDR_Q3_COLEMAK          KC_ESC,   DDR_FN_ROW,                                                     KC_NO,   KC_NO,    RGB_MOD, \
+#define DDR_Q3_COLEMAK          KC_ESC,   KC_F1, DF(0), KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, KC_NO, KC_NO, RGB_MOD, \
                                 KC_GRV,   DDR_NUM_ROW,         KC_MINS,  KC_EQL,  KC_BSPC,                KC_INS,  KC_HOME,  KC_PGUP, \
                                 KC_TAB,   DDR_COLEMAK_TOP_ROW, KC_SCLN,  S(KC_SCLN), KC_RBRC, OSL(3),     KC_DEL,  KC_END,   KC_PGDN, \
                                 KC_BSPC,  DDR_COLEMAK_MID_ROW, KC_QUOT, KC_ENT, \
-                                KC_LSFT,  DDR_COLEMAK_LOW_ROW, KC_RSFT,                                            KC_UP, \
-                                OSM(MOD_LCTL),OSM(MOD_LWIN),OSM(MOD_LALT), KC_SPC, OSM(MOD_RALT), OSL(3), OSM(MOD_RWIN),OSM(MOD_RCTL), KC_LEFT, KC_DOWN,  KC_RGHT
+                                OSM(MOD_LSFT),  DDR_COLEMAK_LOW_ROW, OSM(MOD_RSFT),                                            KC_UP, \
+                                OSM(MOD_LCTL),OSM(MOD_LGUI),OSM(MOD_LALT), LT(3,KC_SPC), OSM(MOD_RALT), OSL(3), OSM(MOD_RGUI),OSM(MOD_RCTL), KC_LEFT, KC_DOWN,  KC_RGHT
 
 #define DDR_Q3_EMPTY \
         _______,            _______,  _______,    _______,    _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,  _______,  _______, \
@@ -106,7 +106,7 @@
         _______,  _______,                                              DDR_SYMBOLS_TOP_ROW,                                     _______,  _______,  _______,            _______, \
         _______,  _______,                                              DDR_SYMBOLS_MID_ROW,                                     _______,            _______,            _______, \
         _______,  _______,            DDR_SYMBOLS_LOW_ROW_L,                             _______,            DDR_SYMBOLS_LOW_ROW_R,                  _______,  _______,           \
-        _______,  _______,  _______,            _______,  _______,  _______,                       _______,            KC_P0,                        _______,  _______,  _______
+        RGB_MOD,  _______,  _______,            _______,  _______,  _______,                       _______,            KC_P0,                        _______,  _______,  _______
 
 #define DDR_Q10_NAV \
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______, \

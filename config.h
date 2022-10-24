@@ -5,16 +5,16 @@
 
 #define DDR_KC(x)  (4096+x)
 
-#define CKC_SEC1 DDR_KC(0)
-#define CKC_SEC2 DDR_KC(1)
-#define CKC_SEC3 DDR_KC(2)
-#define CKC_BL DDR_KC(3)
-#define CKC_WPM DDR_KC(4)
-#define CKC_LL DDR_KC(5)
+#define CKC_SEC1    DDR_KC(0)
+#define CKC_SEC2    DDR_KC(1)
+#define CKC_SEC3    DDR_KC(2)
+#define CKC_BL      DDR_KC(3)
+#define CKC_WPM     DDR_KC(4)
+#define CKC_LL      DDR_KC(5)
 
 
 /* Optimizations the reduce memory usage */
-
+/*
 #ifndef DDR_BIG_MEMORY
     #define LAYER_STATE_8BIT         // alow max 8 layers
     #define NO_ACTION_MACRO          // no macros
@@ -22,10 +22,13 @@
     #undef LOCKING_SUPPORT_ENABLE    // no support for cherry MX lock switches
     #undef LOCKING_RESYNC_ENABLE
 #endif
-
+*/
 
 /* Disable RGB animations */
 
+#define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_SOLID_COLOR
+
+/*
 #undef RGBLIGHT_ANIMATIONS
 #undef RGBLIGHT_EFFECT_BREATHING
 #undef RGBLIGHT_EFFECT_RAINBOW_MOOD
@@ -83,7 +86,7 @@
 #undef ENABLE_RGB_MATRIX_MULTISPLASH
 #undef ENABLE_RGB_MATRIX_SOLID_SPLASH
 #undef ENABLE_RGB_MATRIX_SOLID_MULTISPLASH
-
+*/
 
 
 /* Keymaps */
