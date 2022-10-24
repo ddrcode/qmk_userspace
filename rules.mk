@@ -29,11 +29,15 @@ else
     CONSOLE_ENABLE = yes
     WPM_ENABLE = yes
     EXTRAKEY_ENABLE = yes
-    CONSOLE_ENABLE = yes
     DDR_BIG_MEMORY = yes
 endif
 
 SRC += ddrcode.c
+
+ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)
+    $(info [ddrcode/rules.mk] including rgb_matrix.c)
+    SRC += features/rgb_matrix.c
+endif
 
 ifeq ($(strip $(KEYBOARD)),keychron/q10/q10_ansi_stm32l432_ec11)
     # settings for boards with encoder
@@ -45,14 +49,13 @@ endif
 
 ifneq ("$(wildcard $(USER_PATH)/features/secrets.c)", "")
     $(info [ddrcode/rules.mk] including secrets.c)
-	SRC += features/secrets.c
+    SRC += features/secrets.c
 endif
 
 ifeq ($(strip $(KEY_OVERRIDE_ENABLE)), yes)
     $(info [ddrcode/rules.mk] including key_overrides.c)
-    src += features/key_overrides.c
+    SRC += features/key_overrides.c
 endif
-
 
 
 $(info [ddrcode/rules.mk] end)
