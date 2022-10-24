@@ -5,8 +5,8 @@
     "keymap": "ddrcode",
     "layers": [
         [ "DDR_Q3_QWERTY" ],
-        [ "DDR_Q3_EMPTY" ],
         [ "DDR_Q3_COLEMAK" ],
+        [ "DDR_Q3_EMPTY" ],
         [ "DDR_Q3_SYMBOLS" ]
     ],
     "layout": "LAYOUT_ansi_87_wrapper",
