@@ -90,7 +90,7 @@
         CKC_LL,   KC_TAB,             DDR_COLEMAK_TOP_ROW,                                                             KC_SCLN,  S(KC_SCLN),KC_RBRC, TO(4),              KC_PGUP, \
         _______,  KC_BSPC,            DDR_COLEMAK_MID_ROW,                                                                       KC_QUOT,            KC_ENT,             KC_PGDN, \
         _______,  OSM(MOD_LSFT),      DDR_COLEMAK_LOW_ROW_L,                            KC_ESC,    DDR_COLEMAK_LOW_ROW_R,                            OSM(MOD_RSFT),KC_UP,         \
-        _______,  OSM(MOD_LCTL),  OSM(MOD_LGUI), OSM(MOD_LALT), LT(4,KC_SPC),  OSL(3),        OSM(MOD_RSFT),        OSM(MOD_RALT),                   KC_LEFT,  KC_DOWN,  KC_RGHT
+        _______,  OSM(MOD_LCTL),  OSM(MOD_LGUI), OSM(MOD_LALT),     KC_SPC,    OSL(3),        OSM(MOD_RSFT),        OSM(MOD_RALT),                   KC_LEFT,  KC_DOWN,  KC_RGHT
 
 #define DDR_Q10_DEFAULT \
         KC_MUTE,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   KC_INS,             KC_DEL,  \
@@ -106,7 +106,7 @@
         _______,  _______,                                              DDR_SYMBOLS_TOP_ROW,                                     _______,  _______,  _______,            _______, \
         _______,  _______,                                              DDR_SYMBOLS_MID_ROW,                                     _______,            _______,            _______, \
         _______,  _______,            DDR_SYMBOLS_LOW_ROW_L,                             _______,            DDR_SYMBOLS_LOW_ROW_R,                  _______,  _______,           \
-        RGB_MOD,  _______,  _______,            _______,  _______,  TO(3),               _______,            KC_P0,                        _______,  _______,  _______
+        RGB_MOD,  _______,  _______,            _______,  _______,  TG(3),               _______,            KC_P0,                        _______,  _______,  _______
 
 #define DDR_Q10_NAV \
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______, \
