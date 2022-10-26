@@ -59,5 +59,11 @@ ifeq ($(strip $(KEY_OVERRIDE_ENABLE)), yes)
     SRC += features/key_overrides.c
 endif
 
+ifeq ($(strip $(WPM_ENABLE)), yes)
+    $(info [ddrcode/rules.mk] including wpm.c)
+    DEFERRED_EXEC_ENABLE = yes
+    SRC += features/wpm.c
+endif
+
 
 $(info [ddrcode/rules.mk] end)

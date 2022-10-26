@@ -13,8 +13,16 @@
 
 
 /* One-shot modifiers config */
+
 #define ONESHOT_TAP_TOGGLE 3
 #define ONESHOT_TIMEOUT 3000
+
+
+/* WPM config */
+#ifdef WPM_ENABLE
+    #define WPM_ALLOW_COUNT_REGRESSION
+    #define WPM_LAUNCH_CONTROL
+#endif
 
 
 /* Optimizations to reduce memory usage */

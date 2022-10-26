@@ -17,6 +17,9 @@ __attribute__((weak)) bool process_record_user_osm(uint16_t keycode, keyrecord_t
     return true;
 }
 
+void init_wpm(void);
+
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         switch (keycode) {
@@ -47,6 +50,10 @@ void keyboard_post_init_user(void) {
     #ifdef RGB_MATRIX_ENABLE
     rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
     rgb_matrix_sethsv_noeeprom(HSV_OFF);
+    #endif
+
+    #ifdef WPM_ENABLE
+    init_wpm();
     #endif
 }
 
