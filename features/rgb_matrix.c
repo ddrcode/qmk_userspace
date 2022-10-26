@@ -13,6 +13,8 @@
 */
 
 #ifdef RGB_MATRIX_ENABLE
+void rgb_matrix_indiciate_modifiers(uint8_t mods, uint8_t led_min, uint8_t led_max);
+
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     switch (get_highest_layer(layer_state | default_layer_state)) {
         case QWERTY:
@@ -32,16 +34,27 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             break;
     }
 
-    uint8_t mods = get_mods() | get_oneshot_mods();
+    const uint8_t mods = get_mods() | get_oneshot_mods();
     if (mods) {
-        rgb_matrix_indicate_modifiers(mods);
+        rgb_matrix_indiciate_modifiers(mods, led_min, led_max);
     }
 }
 
-void rgb_matrix_indiciate_modifiers(uint8_t mods) {
-    if (mods & MOD_MASK_SHIFT) {
+void rgb_matrix_indiciate_modifiers(uint8_t mods, uint8_t led_min, uint8_t led_max) {
+    const uint8_t layer = get_highest_layer(layer_state | default_layer_state);
+    /*if (mods & MOD_MASK_SHIFT) {
         rgb_matrix_set_color(63, 0xFF, 0xFF, 0x20);
         rgb_matrix_set_color(74, 0xFF, 0xFF, 0x20);
+    }*/
+
+    for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+        for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+            uint8_t index = g_led_config.matrix_co[row][col];
+            const uint16_t keycode = keymap_key_to_keycode(layer, (keypos_t){col,row});
+            if (index >= led_min && index <= led_max && index != NO_LED && (MOD_BIT(keycode) & mods)) {
+                rgb_matrix_set_color(index, RGB_GREEN);
+            }
+        }
     }
 }
 #endif

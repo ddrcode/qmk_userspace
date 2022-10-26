@@ -13,6 +13,10 @@ __attribute__((weak)) bool process_secrets(uint16_t keycode, keyrecord_t *record
     return true;
 }
 
+__attribute__((weak)) bool process_record_user_osm(uint16_t keycode, keyrecord_t *record) {
+    return true;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         switch (keycode) {
@@ -33,7 +37,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #endif
         }
     }
-    return process_secrets(keycode, record) && process_record_keymap(keycode, record);
+
+    return process_record_user_osm(keycode, record)
+           && process_secrets(keycode, record)
+           && process_record_keymap(keycode, record);
 }
 
 void keyboard_post_init_user(void) {

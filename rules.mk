@@ -29,9 +29,11 @@ else
     CONSOLE_ENABLE = yes
     WPM_ENABLE = yes
     EXTRAKEY_ENABLE = yes
+    COMMAND_ENABLE = yes
     DDR_BIG_MEMORY = yes
 endif
 
+SRC += features/osm.c
 SRC += ddrcode.c
 
 ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)

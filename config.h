@@ -14,8 +14,10 @@
 
 /* One-shot modifiers config */
 #define ONESHOT_TAP_TOGGLE 3
+#define ONESHOT_TIMEOUT 3000
 
-/* Optimizations the reduce memory usage */
+
+/* Optimizations to reduce memory usage */
 
 #ifndef DDR_BIG_MEMORY
     #define LAYER_STATE_8BIT         // alow max 8 layers
