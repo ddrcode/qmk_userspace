@@ -30,6 +30,24 @@ optimized for that. Besides that my configuration is rather conservative: I don'
 - WPM stats (per layout) 
 - Host OS recognition
 
+## Installation and usage
+1. clone official QMK repository: `git clone https://github.com/qmk/qmk_firmware.git` 
+1. Configure QMK according to [official documentation](https://docs.qmk.fm/#/newbs_getting_started) or (my preferred way, Nix users only) by runnix `nix-shell` from `qmk_firmware` folder.
+1. `cd qmk_firmware/users`
+1. clone this repo to `ddrcode` folder: `git clone git@github.com:ddrcode/qmk_userspace.git ddrcode`
+1. You are ready to go, i.e.: `qmk compile users/ddrcode/idobao-id75.json`
+
+### Steps for **Keychron** keyboards:
+
+Official QMK repo at this stage doesn't contain configs for  Keychron Q3 and Q10 keyboards. You must use [Keychron's fork](https://github.com/Keychron/qmk_firmware) instead ([keychron-q3](https://github.com/Keychron/qmk_firmware/tree/keychron-q3) and [playground](https://github.com/Keychron/qmk_firmware/tree/playground) branches respestively).
+I'd still recommend to setup QMK with the official repo and then use Keychron fork for sources only. Step-by-step instruction:
+1. Follow steps 1 and 2 from the installation guide above
+1. Clone Keychron's fork to a folder parallel to `qmk_firmware`, i.e.: `git clone https://github.com/Keychron/qmk_firmware.git qmk_keychron`
+1. `cd qmk_keychron/users`
+1. clone this repo to `ddrcode` folder: `git clone git@github.com:ddrcode/qmk_userspace.git ddrcode`
+1. Switch Keychron fork to a keyboard-specific branch, i.e. for Q3: `git checkout keychron-q3`
+1. Compile: `qmk compile users/ddrcode/keychron_q3.json`
+
 ## Credits 
 - [Filterpaper Notes on Userspaces](https://filterpaper.github.io/qmk/userspace.html)
 - [Userspace (QMK documentation)](https://docs.qmk.fm/#/feature_userspace)
