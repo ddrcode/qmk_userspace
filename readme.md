@@ -4,10 +4,31 @@
 
 This userspace supports the following keyboards:
 
-- Keychron Q3
-- Keychron Q10
-- Hasu USB-USB Converterr
-- Idobao ID75
+- [Keychron Q3](https://www.keychron.com/products/keychron-q3-qmk-custom-mechanical-keyboard) (Standard ANSI, tenkeyless)
+- [Keychron Q10](https://www.keychron.com/products/keychron-q10-alice-layout-qmk-custom-mechanical-keyboard) (Alice layout)
+- [Hasu USB-USB Converterr](https://geekhack.org/index.php?topic=109514.0)
+- [Idobao ID75](https://idobao.net/products/idobao-id75-crystal-hot-swap-keyboard-kit) (5x15 ortholinear, 75 keys / 65%)
+
+### Planned
+- [Ergodox EZ](https://ergodox-ez.com/) (ortholinear, split layout with thumb cluster)
+- [Planck EZ](https://www.zsa.io/planck/) (4x12 ortholinear)
+
+## Main features / ideas
+I frequently switch between Colemak (typing) and Qwerty (regular computer use, non text-editing apps).
+I prefer to tap rather than hold keys so I intesively use one-shot modifiers and one-shot layers (with custom modifications).
+If keyboard layout allows I prefer to use thumbs for modifiers and layer switching, so my layouts are 
+optimized for that. Besides that my configuration is rather conservative: I don't use tap dance, chords, magic keys, etc).
+
+- Support for Qwerty and Colemak layouts (with some [unified keyboard shortcuts](https://github.com/ddrcode/qmk_userspace/blob/main/features/key_overrides.c))
+- Unified symbols layer across all boards
+- Unified navigation layer across all boards
+- RGB matrix with no animations - used for [layers/modifiers indications](https://github.com/ddrcode/qmk_userspace/blob/main/features/rgb_matrix.c) only
+- One-shot modifiers, One-shot layers (with [customizations](https://github.com/ddrcode/qmk_userspace/blob/main/features/osm.c))
+
+### Future/planned work
+- Navigation layer to mimick VIM (see [#1])
+- WPM stats (per layout) 
+- Host OS recognition
 
 ## Credits 
 - [Filterpaper Notes on Userspaces](https://filterpaper.github.io/qmk/userspace.html)
@@ -15,12 +36,9 @@ This userspace supports the following keyboards:
 - [tominabox1 userspace](https://github.com/qmk/qmk_firmware/tree/master/users/tominabox1)
 - [drashna userspace](https://github.com/qmk/qmk_firmware/tree/master/users/drashna)
 
-## Future/planned work
-- VIM layer (see [here](https://github.com/qmk/qmk_firmware/tree/master/keyboards/ergodox_ez/keymaps/vim) and [here](https://github.com/Zindar/qmk_firmware/tree/master/keyboards/zindar12x5) for inspirations)
-- Add more keyboards: Planck and Ergodox
-
-## Firmware size optimization
-Two of my boards: Hasu USB_USB converter and Idobao ID75 are equipped with 32kB of RAM only. By following
+## Interesting reads and links
+### Firmware size optimization
+Two of my boards: Hasu USB_USB converter and Idobao ID75 are equipped with 32kB RAM only. By following
 [these steps](https://docs.qmk.fm/#/squeezing_avr?id=squeezing-the-most-out-of-avr)
 I was able to reduce the file size by up to 7kB. 
 
@@ -40,3 +58,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+[#1]: https://github.com/ddrcode/qmk_userspace/issues/1
