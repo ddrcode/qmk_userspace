@@ -1,6 +1,9 @@
 #include "ddrcode.h"
 #include "print.h"
 
+
+#include "features/vim.h"
+
 #ifdef WPM_ENABLE
 char wpm_buff[5];
 #endif
@@ -42,6 +45,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 
     return process_record_user_osm(keycode, record)
+           && process_record_vim(keycode, record)
            && process_secrets(keycode, record)
            && process_record_keymap(keycode, record);
 }

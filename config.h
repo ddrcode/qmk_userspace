@@ -2,7 +2,7 @@
 
 /* Custom keycodes */
 
-#define DDR_KC(x)  (4096+x)
+#define DDR_KC(x)  (23986+x)
 
 #define CKC_SEC1    DDR_KC(0)
 #define CKC_SEC2    DDR_KC(1)
@@ -10,6 +10,8 @@
 #define CKC_BL      DDR_KC(3)
 #define CKC_WPM     DDR_KC(4)
 #define CKC_LL      DDR_KC(5)
+
+#include "config/vim-config.h"
 
 
 /* One-shot modifiers config */

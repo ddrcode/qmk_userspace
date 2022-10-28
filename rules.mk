@@ -7,6 +7,7 @@ SEND_STRING_ENABLE = yes
 KEY_OVERRIDE_ENABLE = yes
 # BOOTMAGIC_ENABLE = no
 # TERMINAL_ENABLE = yes
+DDR_VIM_ENABLE = yes
 
 $(info [ddrcode/rules.mk] start for keyboard: $(strip $(KEYBOARD)))
 
@@ -33,7 +34,7 @@ else
     DDR_BIG_MEMORY = yes
 endif
 
-SRC += features/osm.c features/vim.c
+SRC += features/osm.c
 SRC += ddrcode.c
 
 ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)
@@ -63,6 +64,11 @@ ifeq ($(strip $(WPM_ENABLE)), yes)
     $(info [ddrcode/rules.mk] including wpm.c)
     DEFERRED_EXEC_ENABLE = yes
     SRC += features/wpm.c
+endif
+
+ifeq ($(strip $(DDR_VIM_ENABLE)), yes)
+    $(info [ddrcode/rules.mk] including vim.c)
+    SRC += features/vim.c
 endif
 
 
