@@ -33,7 +33,7 @@ else
     DDR_BIG_MEMORY = yes
 endif
 
-SRC += features/osm.c
+SRC += features/osm.c features/vim.c
 SRC += ddrcode.c
 
 ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)
