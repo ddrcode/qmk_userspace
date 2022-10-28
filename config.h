@@ -22,6 +22,8 @@
 #ifdef WPM_ENABLE
     #define WPM_ALLOW_COUNT_REGRESSION
     #define WPM_LAUNCH_CONTROL
+    #define WPM_SAMPLE_SECONDS 10
+    #define WPM_SAMPLE_PERIODS 50
 #endif
 
 
