@@ -1,12 +1,13 @@
 #include "ddrcode.h"
 #include "print.h"
 
-
 #include "features/vim.h"
 
 #ifdef WPM_ENABLE
 char wpm_buff[5];
 #endif
+
+bool vi_mode_on = false;
 
 __attribute__((weak)) bool process_record_keymap(uint16_t keycode, keyrecord_t *record) {
     return true;

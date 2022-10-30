@@ -82,7 +82,7 @@
         CKC_LL,   KC_TAB,             DDR_QWERTY_TOP_ROW,                                                                        KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_PGUP, \
         _______,  KC_BSPC,            DDR_QWERTY_MID_ROW,                                                              KC_SCLN,  KC_QUOT,            KC_ENT,             KC_PGDN, \
         _______,  KC_LSFT,            DDR_QWERTY_LOW_ROW_L,                             KC_B,      DDR_QWERTY_LOW_ROW_R,                             KC_RSFT,  KC_UP,             \
-        _______,  KC_LCTL,  KC_LCMD,            KC_LALT,  KC_SPC,   MO(3),                     KC_SPC,            KC_RALT,                           KC_LEFT,  KC_DOWN,  KC_RGHT
+        CKC_VI,   KC_LCTL,  KC_LCMD,            KC_LALT,  KC_SPC,   MO(3),                     KC_SPC,            KC_RALT,                           KC_LEFT,  KC_DOWN,  KC_RGHT
 
 #define DDR_Q10_COLEMAK \
         KC_MUTE,  KC_ESC,             DDR_FN_ROW,                                                                                                    KC_HOME,            KC_END,  \
@@ -90,7 +90,7 @@
         CKC_LL,   KC_TAB,             DDR_COLEMAK_TOP_ROW,                                                             KC_SCLN,  S(KC_SCLN),KC_RBRC, CKC_VI,             KC_PGUP, \
         _______,  KC_BSPC,            DDR_COLEMAK_MID_ROW,                                                                       KC_QUOT,            KC_ENT,             KC_PGDN, \
         _______,  OSM(MOD_LSFT),      DDR_COLEMAK_LOW_ROW_L,                            KC_ESC,    DDR_COLEMAK_LOW_ROW_R,                            OSM(MOD_RSFT),KC_UP,         \
-        _______,  OSM(MOD_LCTL),  OSM(MOD_LGUI), OSM(MOD_LALT),     KC_SPC,    OSL(3),        OSM(MOD_RSFT),        OSM(MOD_RALT),                   KC_LEFT,  KC_DOWN,  KC_RGHT
+        CKC_VI,   OSM(MOD_LCTL),  OSM(MOD_LGUI), OSM(MOD_LALT),     KC_SPC,    OSL(3),        OSM(MOD_RSFT),        OSM(MOD_RALT),                   KC_LEFT,  KC_DOWN,  KC_RGHT
 
 #define DDR_Q10_DEFAULT \
         KC_MUTE,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   KC_INS,             KC_DEL,  \
