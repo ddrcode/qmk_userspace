@@ -10,8 +10,10 @@
 #define CKC_BL      DDR_KC(3)
 #define CKC_WPM     DDR_KC(4)
 #define CKC_LL      DDR_KC(5)
+#define CKC_VI      DDR_KC(6)
 
 #include "config/vim-config.h"
+
 
 
 /* One-shot modifiers config */

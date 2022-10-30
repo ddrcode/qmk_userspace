@@ -8,7 +8,7 @@
         [ "DDR_Q10_COLEMAK" ],
         [ "DDR_Q10_DEFAULT" ],
         [ "DDR_Q10_SYMBOLS" ],
-        [ "DDR_Q10_NAV" ]
+        [ "DDR_Q10_VIM" ]
     ],
     "layout": "LAYOUT_ansi_89_wrapper",
     "notes": "",

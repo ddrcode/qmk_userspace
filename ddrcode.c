@@ -41,11 +41,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING("ls -al\n");
                 break;
 #endif
+            case CKC_VI:
+                vi_mode_on = !vi_mode_on;
+                break;
         }
     }
 
-    return process_record_user_osm(keycode, record)
-           && process_record_vim(keycode, record)
+    bool result = process_record_user_osm(keycode, record);
+    if (result && vi_mode_on) result = process_record_vim(keycode, record);
+    return result  
            && process_secrets(keycode, record)
            && process_record_keymap(keycode, record);
 }

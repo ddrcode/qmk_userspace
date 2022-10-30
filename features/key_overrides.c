@@ -1,4 +1,4 @@
-#include "ddrcode.h"
+#include "quantum.h"
 
 #if defined(KEY_OVERRIDE_ENABLE)
 

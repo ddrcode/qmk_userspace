@@ -9,3 +9,5 @@
 #endif
 
 enum layerNames { QWERTY, COLEMAK, DEFAULT, SYMBOLS, NAVIGATION };
+
+bool vi_mode_on = false;
