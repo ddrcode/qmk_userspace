@@ -206,7 +206,7 @@ static bool vi_is_layer_key(uint16_t keycode) {
     return  false;
 }
 
-static bool vi_process_record(uint16_t keycode, vi_state_t * const state) {
+static void vi_process_record(uint16_t keycode, vi_state_t * const state) {
     switch(keycode) {
         // repetition
         case KC_1...KC_9: 
@@ -222,22 +222,30 @@ static bool vi_process_record(uint16_t keycode, vi_state_t * const state) {
         case KC_DOWN:
         case KC_J: FN_CALL(down); break;
 
-        // jumps (eb0)
+        // jumps (eb0$G)
         case KC_0: 
         case KC_P0: FN_CALL(bol); break;
+        case S(KC_4): FN_CALL(eol); break;
         case KC_B: FN_CALL(back_word); break;
         case KC_E: MODTAP(KC_LALT, KC_RIGHT); break;
+        case S(KC_G): FN_CALL(eof); break;
 
-        // edits (aio)
+        // edits (aioAIJO)
         case KC_A: FN_CALL(append); break;
         case KC_I: FN_CALL(insert); break;
+        case S(KC_A): FN_CALL(eol); FN_CALL(insert); break;
+        case S(KC_I): FN_CALL(bol); FN_CALL(insert); break;
         case KC_O: FN_CALL(new_line); break;
+        case S(KC_O): FN_CALL(new_line_up); break;
         case KC_S: FN_CALL(replace_then_edit); break;
+        case S(KC_J): FN_CALL(join_line); break;
        
-        // delete (xd)
+        // delete (xXd)
         case KC_D: FN_CALL(del_fn); break;
         case KC_DEL:
         case KC_X: FN_CALL(del);  break;
+        case KC_BSPC:
+        case S(KC_X): TAPN(KC_BACKSPACE); break;
         
         // copy / paste (yp)
         case KC_P: FN_CALL(paste); break;
@@ -245,81 +253,50 @@ static bool vi_process_record(uint16_t keycode, vi_state_t * const state) {
 
         // undo / redo (u)
         case KC_U: FN_CALL(undo); break;
+        case C(KC_R): FN_CALL(redo); break;
 
         // VI modes (v)
         case KC_V: FN_CALL(mod_select); break;
         
         // other (Esc)
         case KC_ESC: FN_CALL(reset); break;
-        //default: return false;
     }
 
     if (keycode < KC_1 || keycode > KC_9) state->rep = 1;
-    return false;
 }
 
-static bool vi_process_record_with_shift(uint16_t keycode, vi_state_t * const state) {
-    switch(keycode) {
-        // jumps ($)
-        case KC_4: FN_CALL(eol); break;
-        case KC_G: FN_CALL(eof); break;
+static uint16_t vi_process_mods(uint16_t keycode, bool pressed) {
+    static bool shift_down = false;
+    static bool ctrl_down = false;
 
-        // edits (AIJO)
-        case KC_A: FN_CALL(eol); FN_CALL(insert); break;
-        case KC_I: FN_CALL(bol); FN_CALL(insert); break;
-        case KC_J: FN_CALL(join_line); break;
-        case KC_O: FN_CALL(new_line_up); break;
-
-        // delete (X)
-        case KC_X: TAPN(KC_BACKSPACE); break;
-        default: return false;
-    }
-    return false;
-}
-
-static bool vi_process_record_with_control(uint16_t keycode, vi_state_t * const state) {
-    switch(keycode) {
-        case KC_R: FN_CALL(redo); break;
-        default: return false;
-    }
-    return false;
-}
-
-static void vi_process_mod(uint16_t keycode, vi_state_t * const state, bool pressed) {
     if (IS_MOD(keycode)) {
         switch (keycode) {
             case KC_LEFT_SHIFT:
             case KC_RIGHT_SHIFT:
-                state->shift_down = pressed;
+                shift_down = pressed;
                 break;
             case KC_LEFT_CTRL:
             case KC_RIGHT_CTRL:
-                state->ctrl_down = pressed;
+                ctrl_down = pressed;
                 break;
         }
-    } else {
-        if ((keycode >> 8) == 1) state->ctrl_down = pressed;
-        else if ((keycode >> 8) == 2) state->shift_down = pressed;
     }
+    if (ctrl_down) keycode |= 1 << 8;
+    if (shift_down) keycode |= 2 << 8;
+    return keycode;
 }
 
 bool process_record_vim(uint16_t keycode, keyrecord_t *record) {
     static vi_state_t state = { 1, MAC, NORMAL, false, false };
 
     if (vi_is_layer_key(keycode)) return true;
-    vi_process_mod(keycode, &state, record->event.pressed);
+    keycode = vi_process_mods(keycode, record->event.pressed);
+
     if (!record->event.pressed) return false;
 
-    // printf("Proccesing vim keycode %d  \n", keycode);
-    //const bool with_shift = (keyboard_report->mods & MOD_BIT(KC_LSFT)) | (keyboard_report->mods & MOD_BIT(KC_RSFT));
-    //const bool with_control = (keyboard_report->mods & MOD_BIT(KC_LCTRL)) | (keyboard_report->mods & MOD_BIT(KC_RCTRL));
-    keycode = vi_key_override(keycode & 0xFF);
-
+    keycode = vi_key_override(keycode);
     printf("QMK state: rep=%d, mode=%d, kc=%d (%d, %d), shift=%d, ctrl=%d\n", state.rep, state.mode, keycode, keycode & 0xff, keycode >> 8, state.shift_down, state.ctrl_down);
 
-    if (state.shift_down && state.mode == NORMAL) vi_process_record_with_shift(keycode, &state);
-    else if (state.ctrl_down && state.mode == NORMAL) vi_process_record_with_control(keycode, &state);
-    else vi_process_record(keycode, &state);
-
+    vi_process_record(keycode, &state);
     return false;
 }
