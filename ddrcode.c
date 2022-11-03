@@ -43,6 +43,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 break;
 #endif
             case CKC_VI:
+                clear_keyboard();
                 vi_mode_on = !vi_mode_on;
                 break;
         }
