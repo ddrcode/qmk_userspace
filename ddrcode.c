@@ -1,7 +1,7 @@
 #include "ddrcode.h"
 #include "print.h"
 
-#include "features/vim.h"
+#include "extensions/vim.h"
 
 #ifdef WPM_ENABLE
 char wpm_buff[5];
