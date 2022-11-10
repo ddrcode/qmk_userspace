@@ -1,9 +1,11 @@
 #include "vim.h"
+#include "helpers/helpers.h"
 #include "print.h"
 
 #define PRESS(keycode) register_code16(keycode)
 #define RELEASE(keycode) unregister_code16(keycode)
 #define REPEAT(CODE) for(int i=state->rep; i; --i) {CODE;}
+#define TAP(keycode) tap_code16(keycode)
 #define TAPN(keycode) REPEAT(TAP(keycode))
 #define VI_FN(NAME) static void vi_ ## NAME(vi_state_t * const state)
 #define FN_CALL(NAME) vi_ ## NAME(state);
@@ -12,17 +14,11 @@
 
 extern bool vi_mode_on;
 
-static inline void TAP(int16_t keycode) {
-    register_code16(keycode);
-    unregister_code16(keycode);
-}
-
 static inline void MODTAP(int16_t mod, int16_t keycode) {
     PRESS(mod);
     TAP(keycode);
     RELEASE(mod);
 }
-
 
 typedef enum {
     UNKNOWN,
@@ -184,21 +180,6 @@ uint16_t vi_key_override(uint16_t keycode) {
     return keycode;
 }
 
-static bool vi_is_layer_key(uint16_t keycode) {
-    switch (keycode) {
-        case QK_DEF_LAYER ... QK_DEF_LAYER_MAX:
-        case QK_MOMENTARY ... QK_MOMENTARY_MAX:
-        case QK_LAYER_MOD ... QK_LAYER_MOD_MAX:
-        case QK_ONE_SHOT_LAYER ... QK_ONE_SHOT_LAYER_MAX:
-        case QK_TOGGLE_LAYER ... QK_TOGGLE_LAYER_MAX:
-        case QK_TO ... QK_TO_MAX:
-        case QK_LAYER_TAP_TOGGLE ... QK_LAYER_TAP_TOGGLE_MAX:
-            printf("Layer key down %d, %d \n", keycode, keycode & 0xFF);
-            return true;
-    }
-    return  false;
-}
-
 static void vi_process_record(uint16_t keycode, vi_state_t * const state) {
     switch(keycode) {
         // repetition
@@ -282,13 +263,13 @@ static uint16_t vi_process_mods(uint16_t keycode, bool pressed) {
 bool process_record_vim(uint16_t keycode, keyrecord_t *record) {
     static vi_state_t state = { 1, MAC, NORMAL, false, false };
 
-    if (vi_is_layer_key(keycode)) return true;
+    if (is_layer_key(keycode)) return true;
     keycode = vi_process_mods(keycode, record->event.pressed);
 
     if (!record->event.pressed) return false;
 
     keycode = vi_key_override(keycode);
-    printf("QMK state: rep=%d, mode=%d, kc=%d (%d, %d), shift=%d, ctrl=%d\n", state.rep, state.mode, keycode, keycode & 0xff, keycode >> 8, state.shift_down, state.ctrl_down);
+    // printf("QMK state: rep=%d, mode=%d, kc=%d (%d, %d), shift=%d, ctrl=%d\n", state.rep, state.mode, keycode, keycode & 0xff, keycode >> 8, state.shift_down, state.ctrl_down);
 
     vi_process_record(keycode, &state);
     return false;
