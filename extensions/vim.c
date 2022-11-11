@@ -28,13 +28,6 @@ typedef enum {
     WIN
 } op_system_t;
 
-typedef enum {
-    NORMAL,
-    SELECTION,
-    INSERT,
-    DELETE
-} vi_mode_t;
-
 typedef struct {
     uint16_t rep;
     op_system_t os;

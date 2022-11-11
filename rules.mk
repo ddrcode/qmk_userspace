@@ -34,7 +34,7 @@ else
     DDR_BIG_MEMORY = yes
 endif
 
-SRC += helpers/helpers.c
+SRC += helpers/layer.c helpers/keycode.c
 SRC += ddrcode.c
 SRC += features/osm.c
 
@@ -69,7 +69,7 @@ endif
 
 ifeq ($(strip $(DDR_VIM_ENABLE)), yes)
     $(info [ddrcode/rules.mk] including vim.c)
-    SRC += extensions/vim.c features/vim.c
+    SRC += extensions/vim_parser.c extensions/vim.c features/vim.c
 endif
 
 
