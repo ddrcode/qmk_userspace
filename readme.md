@@ -21,12 +21,11 @@ optimized for that. Besides that my configuration is rather conservative: I don'
 
 - Support for Qwerty and Colemak layouts (with some [unified keyboard shortcuts](https://github.com/ddrcode/qmk_userspace/blob/main/features/key_overrides.c))
 - Unified symbols layer across all boards
-- Unified navigation layer across all boards
+- [VI/VIM mode](#VI)
 - RGB matrix with no animations - used for [layers/modifiers indications](https://github.com/ddrcode/qmk_userspace/blob/main/features/rgb_matrix.c) only
 - One-shot modifiers, One-shot layers (with [customizations](https://github.com/ddrcode/qmk_userspace/blob/main/features/osm.c))
 
 ### Future/planned work
-- Navigation layer to mimick VIM (see [#1])
 - WPM stats (per layout) 
 - Host OS recognition
 
@@ -79,5 +78,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-
-[#1]: https://github.com/ddrcode/qmk_userspace/issues/1
+[#VI]: https://github.com/ddrcode/qmk_userspace/blob/vim/extension_vi.md

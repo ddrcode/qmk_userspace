@@ -34,7 +34,7 @@ layer and follows keyboard layout.
 
 ## Unsupported features
 
-The features listed below won't be supported due to limitations of running VI mode
+The features listed below can't be supported due to limitations of running VI mode
 on keyboard level:
 
 - Move to top of the screen (`H`)
@@ -51,6 +51,30 @@ on keyboard level:
 - indents
 - Block selection (`ctrl+v`)
 
+## Enabling VI mode
+
+There is a dedicated key code: `CKC_VI` that toggles VI mode.
+
+Other option is to call of the following functions: `toggle_vi_mode` (`CKC_VI` keycode
+calls this function), or `enter_vi_mode`.
+
+To quit VI mode, `exit_vi_mode` function can be called.
+
+## How it works?
+
+VI mode does not require dedicated layer and it works on top of any existing layers. 
+When enabled it *hijaks* (almost) all key presses and combines them into
+key sequences. Sequences are being then parsed by VI parser and executed when
+valid and complete (i.e.: `w`, `5w`, `10dw`, `d10w`)
+
+Key presses that are not *hijaked* by VI mode are layer switchers and media/system keys.
+
+The fact that VI mode is not implemented as a layer is a key feature, as it makes it
+to utilise any existing layouts and layers, without extra configuration.
+Imagine a 40% keyboard configured with four layers: Qwerty, Colemak, Symbols and Numbers. 
+As layer switching happens outside of VI mode, user can easily
+switch between layers while typing VI command sequence, i.e. to provide sequences
+with numbers (`10dd`) or symbols (`$`).
 
 ## Key Remapping
 
