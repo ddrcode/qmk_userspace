@@ -4,17 +4,15 @@
 
 #define PRESS(keycode) register_code16(keycode)
 #define RELEASE(keycode) unregister_code16(keycode)
-#define REPEAT(CODE) for(int i=state->rep; i; --i) {CODE;}
+#define REPEAT(CODE) for(int i=cmd->rep; i; --i) {CODE;}
 #define TAP(keycode) tap_code16(keycode)
 #define TAPN(keycode) REPEAT(TAP(keycode))
-#define VI_FN(NAME) static void vi_ ## NAME(vi_state_t * const state)
-#define FN_CALL(NAME) vi_ ## NAME(state);
-#define OS_MOD os_mod(state)
+#define VI_FN(NAME) static void vi_ ## NAME(vi_cmd_t * const cmd)
+#define FN_CALL(NAME) vi_ ## NAME(cmd);
+#define OS_MOD os_mod()
 #define MODTAPN(MOD, KC)  PRESS(MOD); TAPN(KC); RELEASE(MOD)
 
-bool vi_mode_on = false;
-
-static kc_t vi_seq[VI_SEQ_SIZE];
+static void vi_exec_cmd(vi_cmd_t * const cmd);
 
 static inline void MODTAP(int16_t mod, int16_t keycode) {
     PRESS(mod);
@@ -31,37 +29,48 @@ typedef enum {
 } op_system_t;
 
 typedef struct {
-    uint16_t rep;
     op_system_t os;
     vi_mode_t mode;
     bool shift_down;
     bool ctrl_down;
+    vi_cmd_t last_cmd;
 } vi_state_t;
 
-static inline uint16_t os_mod(vi_state_t * const state) {
-    return state->os == MAC ? KC_LEFT_GUI : KC_LEFT_CTRL;
+bool vi_mode_on = false;
+
+static vi_state_t state = { MAC, NORMAL, false, false };
+static kc_t vi_seq[VI_SEQ_SIZE];
+
+static inline uint16_t os_mod(void) {
+    return state.os == MAC ? KC_LEFT_GUI : KC_LEFT_CTRL;
 }
 
-static void change_mode(vi_state_t * const state, vi_mode_t mode) {
-    if (state->mode == mode) return;
-    if (state->mode == SELECTION) TAP(KC_ESC);
-    state->mode = mode;
+static void change_mode(vi_mode_t mode) {
+    if (state.mode == mode) return;
+    if (state.mode == SELECTION) TAP(KC_ESC);
+    state.mode = mode;
 }
 
-static void vi_cut(vi_state_t * const state) {
-    MODTAP(os_mod(state), KC_X);
+static void vi_cut(void) {
+    MODTAP(os_mod(), KC_X);
 }
 
-VI_FN(reset) {
-    state->rep = 1;
-    state->ctrl_down = false;
-    state->shift_down = false;
-    change_mode(state, NORMAL);
+static void clear_vi_seq(void) {
+    for (uint8_t i=0; i<VI_SEQ_SIZE; ++i) {
+        vi_seq[i] = 0;
+    }
+}
+
+void vi_reset(void) {
+    state.ctrl_down = false;
+    state.shift_down = false;
+    change_mode(NORMAL);
+    clear_vi_seq();
     // clear_keyboard();
 }
 
 VI_FN(insert) {
-    vi_reset(state);
+    vi_reset();
     exit_vi_mode();
 }
 
@@ -84,7 +93,7 @@ VI_FN(undo) {
 }
 
 VI_FN(redo) {
-    if (state->os == MAC) {
+    if (state.os == MAC) {
         PRESS(KC_LEFT_GUI);
         PRESS(KC_LEFT_SHIFT);
         TAPN(KC_Z);
@@ -106,41 +115,54 @@ VI_FN(eol) {
     TAP(KC_END);    
 }
 
+VI_FN(bof) {
+    MODTAP(os_mod(), state.os == MAC ? KC_UP : KC_HOME);
+}
+
 VI_FN(eof) {
-    MODTAP(os_mod(state), state->os == MAC ? KC_DOWN : KC_END);
+    MODTAP(os_mod(), state.os == MAC ? KC_DOWN : KC_END);
 }
 
 VI_FN(del_fn) {
-    if (state->mode == NORMAL) {
-        change_mode(state, DELETE);
+    if (state.mode == NORMAL) {
+        change_mode(DELETE);
         return;
     }
-    vi_bol(&(vi_state_t){ 1, state->os, NORMAL });
+    vi_bol(&(vi_cmd_t){ 1, NORMAL, KC_0 });
     PRESS(KC_LEFT_SHIFT);
     REPEAT(TAP(KC_DOWN));
     RELEASE(KC_LEFT_SHIFT);
-    vi_cut(state);
-    vi_reset(state);
+    vi_cut();
+    vi_reset();
 }
 
 VI_FN(yank) {
-    if (state->mode == SELECTION) RELEASE(KC_LEFT_SHIFT);
+    if (state.mode == SELECTION) RELEASE(KC_LEFT_SHIFT);
     MODTAP(OS_MOD, KC_C);
-    FN_CALL(reset);
+    vi_reset();
 }
 
 VI_FN(paste) {
     MODTAPN(OS_MOD, KC_V);
-    vi_reset(state);
+    vi_reset();
 }
 
 VI_FN(mod_select) {
-    change_mode(state, SELECTION);
+    change_mode(SELECTION);
     PRESS(KC_LSHIFT);
 }
 
 VI_FN(back_word) {
-    MODTAPN(state->os == MAC ? KC_LALT : KC_LCTRL, KC_LEFT);
+    MODTAPN(state.os == MAC ? KC_LALT : KC_LCTRL, KC_LEFT);
+}
+
+VI_FN(forward_word) {
+    MODTAPN(state.os == MAC ? KC_LALT : KC_LCTRL, KC_RIGHT);
+}
+
+VI_FN(forward_next_word) {
+    FN_CALL(forward_word);
+    TAP(KC_RIGHT);
 }
 
 VI_FN(new_line) {
@@ -159,21 +181,19 @@ VI_FN(new_line_up) {
 VI_FN(join_line) {
     REPEAT(
         FN_CALL(eol);
-        TAP(KC_SPACE);
+        if (cmd->mode == NORMAL) TAP(KC_SPACE);
         TAP(KC_DEL);
     );
 }
 
 VI_FN(replace_then_edit) {
     MODTAPN(KC_LEFT_SHIFT, KC_RIGHT);
-    FN_CALL(cut);
+    vi_cut();
     FN_CALL(insert);
 }
 
-static void clear_vi_seq(void) {
-    for (uint8_t i=0; i<VI_SEQ_SIZE; ++i) {
-        vi_seq[i] = 0;
-    }
+VI_FN(exec_last) {
+    REPEAT(vi_exec_cmd(&state.last_cmd));
 }
 
 __attribute__((weak)) 
@@ -181,11 +201,26 @@ kc_t vi_key_override(kc_t keycode) {
     return keycode;
 }
 
-static void vi_process_record(kc_t keycode, vi_state_t * const state) {
-    switch(keycode) {
-        // repetition
-        case KC_1...KC_9: 
-        case KC_P1...KC_P9: state->rep = keycode-KC_1+1; break;
+static kc_t vi_process_mods(kc_t keycode, bool pressed) {
+    if (IS_MOD(keycode)) {
+        switch (keycode) {
+            case KC_LEFT_SHIFT:
+            case KC_RIGHT_SHIFT:
+                state.shift_down = pressed;
+                break;
+            case KC_LEFT_CTRL:
+            case KC_RIGHT_CTRL:
+                state.ctrl_down = pressed;
+                break;
+        }
+    }
+    if (state.ctrl_down) keycode |= 1 << 8;
+    if (state.shift_down) keycode |= 2 << 8;
+    return keycode;
+}
+
+static void vi_exec_cmd(vi_cmd_t * const cmd) {
+    switch (cmd->keycode) {
 
         // navigation (hjkl)
         case KC_LEFT:
@@ -202,7 +237,9 @@ static void vi_process_record(kc_t keycode, vi_state_t * const state) {
         case KC_P0: FN_CALL(bol); break;
         case S(KC_4): FN_CALL(eol); break;
         case KC_B: FN_CALL(back_word); break;
-        case KC_E: MODTAP(KC_LALT, KC_RIGHT); break;
+        case KC_E: FN_CALL(forward_word); break;
+        case KC_W: FN_CALL(forward_next_word); break;
+        case KC_G: if (cmd->mode == JUMP) FN_CALL(bof); break;
         case S(KC_G): FN_CALL(eof); break;
 
         // edits (aioAIJO)
@@ -233,73 +270,52 @@ static void vi_process_record(kc_t keycode, vi_state_t * const state) {
         // VI modes (v)
         case KC_V: FN_CALL(mod_select); break;
         
-        // other (Esc)
-        case KC_ESC: FN_CALL(reset); break;
+        // other (Esc) 
+        case KC_ESC: vi_reset(); break;
+        case KC_DOT: FN_CALL(exec_last); break;
     }
-
-    if (keycode < KC_1 || keycode > KC_9) state->rep = 1;
-}
-
-static kc_t vi_process_mods(kc_t keycode, bool pressed) {
-    static bool shift_down = false;
-    static bool ctrl_down = false;
-
-    if (IS_MOD(keycode)) {
-        switch (keycode) {
-            case KC_LEFT_SHIFT:
-            case KC_RIGHT_SHIFT:
-                shift_down = pressed;
-                break;
-            case KC_LEFT_CTRL:
-            case KC_RIGHT_CTRL:
-                ctrl_down = pressed;
-                break;
-        }
-    }
-    if (ctrl_down) keycode |= 1 << 8;
-    if (shift_down) keycode |= 2 << 8;
-    return keycode;
 }
 
 static void process_vi_seq(kc_t keycode) {
+    if (!is_kc_printable_char(keycode & 0xff) && !is_kc_arrow(keycode & 0xff)) return;
+
     uint8_t i = 0;
     while (i<VI_SEQ_SIZE && vi_seq[i++] > 0);
     vi_seq[--i] = keycode;
-    vi_cmd_t cmd = (vi_cmd_t){ .rep=1, .mode=NORMAL, .cmd=0 };
+    vi_cmd_t cmd = (vi_cmd_t){ .rep=1, .mode=NORMAL, .keycode=0 };
     if (!parse_vi_seq(vi_seq, &cmd)) {
         clear_vi_seq();
         if (i > 0) process_vi_seq(keycode);
     }
     else if (is_vi_seq_complete(&cmd)) {
-        printf("CMD is complete rep=%d, cmd=%d, mode=%d\n", cmd.rep, cmd.cmd, cmd.mode);
+        printf("CMD is complete rep=%d, keycode=%d, mode=%d\n", cmd.rep, cmd.keycode, cmd.mode);
+        vi_exec_cmd(&cmd);
+        if (cmd.keycode != KC_DOT) state.last_cmd = cmd;
         clear_vi_seq();
     }
 }
 
 bool process_record_vim(uint16_t keycode, keyrecord_t *record) {
-    static vi_state_t state = { 1, MAC, NORMAL, false, false };
-
     if (is_layer_key(keycode)) return true;
     keycode = vi_process_mods(keycode, record->event.pressed);
 
     if (!record->event.pressed) return false;
 
     keycode = vi_key_override(keycode);
-    // printf("QMK state: rep=%d, mode=%d, kc=%d (%d, %d), shift=%d, ctrl=%d\n", state.rep, state.mode, keycode, keycode & 0xff, keycode >> 8, state.shift_down, state.ctrl_down);
 
     process_vi_seq(keycode);
-    vi_process_record(keycode, &state);
     return false;
 }
 
 void enter_vi_mode(void) {
     clear_keyboard();
-    clear_vi_seq();
+    vi_reset();
     vi_mode_on = true;
 }
 
 void exit_vi_mode(void) {
     vi_mode_on = false;
+    vi_reset();
 }
 
 void toggle_vi_mode(void) {

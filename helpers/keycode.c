@@ -31,3 +31,11 @@ bool is_layer_key(kc_t keycode) {
     }
     return  false;
 }
+
+bool is_kc_printable_char(kc_t keycode) {
+    return is_kc_in_range(keycode, KC_A, KC_SLASH) || is_kc_in_range(keycode, KC_PSLS, KC_PDOT);
+}
+
+bool is_kc_arrow(kc_t keycode) {
+    return is_kc_in_range(keycode, KC_RIGHT, KC_UP);
+}

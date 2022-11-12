@@ -1,17 +1,11 @@
 #include <stdbool.h>
 #include "vim.h"
 
-static uint16_t int_pow10(uint8_t x) {
-    if (x == 0) return 1;
-    uint16_t res = 1;
-    while(x-- > 0) res *= 10;
-    return res;
-}
-
-static const kc_t MODE_KEYS[] = { KC_D, KC_V, 0 };
+static const kc_t MODE_KEYS[] = { KC_D, KC_G, KC_V, 0 };
 static const kc_t NAV_KEYS[] = { KC_0, KC_P0, KC_H, KC_J, KC_K, KC_L, 
                                  KC_LEFT, KC_RIGHT, KC_UP, KC_DOWN, 
                                  KC_B, KC_E, S(KC_G), S(KC_4), 0 };
+static const kc_t EDIT_KEYS[] = { KC_I, KC_A, KC_O, S(KC_O), S(KC_J), KC_DOT, KC_ESC, 0 };
 
 static bool has_keycode(kc_t kc, kc_t const * const arr) {
     for (int i=0; arr[i] > 0; ++i) {
@@ -24,8 +18,16 @@ static inline bool is_nav(kc_t kc) {
     return has_keycode(kc, NAV_KEYS);
 }
 
+static inline bool is_edit(kc_t kc) {
+    return has_keycode(kc, EDIT_KEYS);
+}
+
 static inline bool is_mode(kc_t kc) {
     return has_keycode(kc, MODE_KEYS);
+}
+
+static inline bool is_cmd(kc_t kc) {
+    return is_nav(kc) || is_edit(kc);
 }
 
 static uint16_t parse_num(vi_seq_t seq, uint8_t * i) {
@@ -42,6 +44,7 @@ static uint16_t parse_num(vi_seq_t seq, uint8_t * i) {
 static vi_mode_t kc2mode(kc_t kc) {
     switch(kc) {
         case KC_D: return DELETE;
+        case KC_G: return JUMP;
         case KC_V: return SELECTION;
     }
     return NORMAL;
@@ -55,16 +58,20 @@ bool parse_vi_seq(vi_seq_t seq, vi_cmd_t * cmd) {
 
     for (uint8_t i=0; i<VI_SEQ_SIZE && seq[i] != 0; ++i) {
         uint16_t keycode = seq[i];
-        if (is_nav(keycode) || (is_kc_zero(keycode) && !is_kc_digit(prev))) {
-            if (nav && !is_nav(prev)) return false;
+        if (is_cmd(keycode) || (is_kc_zero(keycode) && !is_kc_digit(prev))) { 
+            if (nav && !is_cmd(prev)) return false;
             nav = true;
-            if (cmd) cmd->cmd = keycode;
+            if (cmd) cmd->keycode = keycode;
         } 
         else if (is_kc_digit(keycode)) {
             if (nav) return false;
             if (cmd) cmd->rep = parse_num(seq, &i);
         }
         else if (is_mode(keycode)) {
+            if (mod && kc2mode(keycode) == cmd->mode) {  // case for gg, yy, vv, dd
+                cmd->keycode = keycode;
+                return true;
+            }
             if (mod || nav) return false;
             mod = true;
             if (cmd) cmd->mode = kc2mode(keycode);
@@ -78,6 +85,6 @@ bool parse_vi_seq(vi_seq_t seq, vi_cmd_t * cmd) {
 }
 
 bool is_vi_seq_complete(vi_cmd_t * const cmd) {
-    return cmd->cmd > 0;
+    return cmd->keycode > 0;
 }
 

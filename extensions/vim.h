@@ -12,13 +12,14 @@ typedef enum {
     NORMAL = 0,
     SELECTION,
     INSERT,
-    DELETE
+    DELETE,
+    JUMP // g-key 
 } vi_mode_t;
 
 typedef struct {
     uint16_t rep;
     vi_mode_t mode;
-    kc_t cmd;
+    kc_t keycode;
 } vi_cmd_t;
 
 bool is_vi_mode_on(void);
