@@ -7,8 +7,6 @@
 char wpm_buff[5];
 #endif
 
-bool vi_mode_on = false;
-
 __attribute__((weak)) bool process_record_keymap(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
@@ -43,14 +41,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 break;
 #endif
             case CKC_VI:
-                clear_keyboard();
-                vi_mode_on = !vi_mode_on;
+                toggle_vi_mode();
                 break;
         }
     }
 
     bool result = process_record_user_osm(keycode, record);
-    if (result && vi_mode_on) result = process_record_vim(keycode, record);
+    if (result && is_vi_mode_on()) result = process_record_vim(keycode, record);
     return result  
            && process_secrets(keycode, record)
            && process_record_keymap(keycode, record);

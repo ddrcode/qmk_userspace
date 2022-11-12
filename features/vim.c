@@ -1,7 +1,7 @@
 #include "extensions/vim.h"
 #include "helpers/helpers.h"
 
-static uint16_t vi_key_override_qwerty(uint16_t keycode) {
+kc_t vi_key_override_qwerty(kc_t keycode) {
     switch(keycode) {
         // navigation
         case KC_I: return KC_K;
@@ -16,7 +16,7 @@ static uint16_t vi_key_override_qwerty(uint16_t keycode) {
     return keycode;
 }
 
-static uint16_t vi_key_override_colemak(uint16_t keycode) {
+kc_t vi_key_override_colemak(kc_t keycode) {
     switch(keycode) {
         // navigation
         case KC_U: return KC_K;
@@ -32,7 +32,7 @@ static uint16_t vi_key_override_colemak(uint16_t keycode) {
     return keycode;
 }
 
-uint16_t vi_key_override(uint16_t keycode) {
+kc_t vi_key_override(kc_t keycode) {
     return is_default_layer_colemak() 
          ? vi_key_override_colemak(keycode) 
          : vi_key_override_qwerty(keycode);

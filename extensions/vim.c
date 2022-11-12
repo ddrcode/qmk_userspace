@@ -12,7 +12,9 @@
 #define OS_MOD os_mod(state)
 #define MODTAPN(MOD, KC)  PRESS(MOD); TAPN(KC); RELEASE(MOD)
 
-extern bool vi_mode_on;
+bool vi_mode_on = false;
+
+static kc_t vi_seq[VI_SEQ_SIZE];
 
 static inline void MODTAP(int16_t mod, int16_t keycode) {
     PRESS(mod);
@@ -60,7 +62,7 @@ VI_FN(reset) {
 
 VI_FN(insert) {
     vi_reset(state);
-    vi_mode_on = false;
+    exit_vi_mode();
 }
 
 VI_FN(append) {
@@ -168,12 +170,18 @@ VI_FN(replace_then_edit) {
     FN_CALL(insert);
 }
 
+static void clear_vi_seq(void) {
+    for (uint8_t i=0; i<VI_SEQ_SIZE; ++i) {
+        vi_seq[i] = 0;
+    }
+}
+
 __attribute__((weak)) 
-uint16_t vi_key_override(uint16_t keycode) {
+kc_t vi_key_override(kc_t keycode) {
     return keycode;
 }
 
-static void vi_process_record(uint16_t keycode, vi_state_t * const state) {
+static void vi_process_record(kc_t keycode, vi_state_t * const state) {
     switch(keycode) {
         // repetition
         case KC_1...KC_9: 
@@ -232,7 +240,7 @@ static void vi_process_record(uint16_t keycode, vi_state_t * const state) {
     if (keycode < KC_1 || keycode > KC_9) state->rep = 1;
 }
 
-static uint16_t vi_process_mods(uint16_t keycode, bool pressed) {
+static kc_t vi_process_mods(kc_t keycode, bool pressed) {
     static bool shift_down = false;
     static bool ctrl_down = false;
 
@@ -253,6 +261,21 @@ static uint16_t vi_process_mods(uint16_t keycode, bool pressed) {
     return keycode;
 }
 
+static void process_vi_seq(kc_t keycode) {
+    uint8_t i = 0;
+    while (i<VI_SEQ_SIZE && vi_seq[i++] > 0);
+    vi_seq[--i] = keycode;
+    vi_cmd_t cmd = (vi_cmd_t){ .rep=1, .mode=NORMAL, .cmd=0 };
+    if (!parse_vi_seq(vi_seq, &cmd)) {
+        clear_vi_seq();
+        if (i > 0) process_vi_seq(keycode);
+    }
+    else if (is_vi_seq_complete(&cmd)) {
+        printf("CMD is complete rep=%d, cmd=%d, mode=%d\n", cmd.rep, cmd.cmd, cmd.mode);
+        clear_vi_seq();
+    }
+}
+
 bool process_record_vim(uint16_t keycode, keyrecord_t *record) {
     static vi_state_t state = { 1, MAC, NORMAL, false, false };
 
@@ -264,6 +287,27 @@ bool process_record_vim(uint16_t keycode, keyrecord_t *record) {
     keycode = vi_key_override(keycode);
     // printf("QMK state: rep=%d, mode=%d, kc=%d (%d, %d), shift=%d, ctrl=%d\n", state.rep, state.mode, keycode, keycode & 0xff, keycode >> 8, state.shift_down, state.ctrl_down);
 
+    process_vi_seq(keycode);
     vi_process_record(keycode, &state);
     return false;
 }
+
+void enter_vi_mode(void) {
+    clear_keyboard();
+    clear_vi_seq();
+    vi_mode_on = true;
+}
+
+void exit_vi_mode(void) {
+    vi_mode_on = false;
+}
+
+void toggle_vi_mode(void) {
+    if (vi_mode_on) exit_vi_mode();
+    else enter_vi_mode();
+}
+
+bool is_vi_mode_on(void) {
+    return vi_mode_on;
+}
+

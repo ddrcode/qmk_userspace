@@ -34,7 +34,7 @@ else
     DDR_BIG_MEMORY = yes
 endif
 
-SRC += helpers/layer.c helpers/keycode.c
+SRC += $(wildcard $(USER_PATH)/helpers/*.c)
 SRC += ddrcode.c
 SRC += features/osm.c
 

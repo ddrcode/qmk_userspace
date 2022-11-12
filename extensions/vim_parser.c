@@ -1,11 +1,16 @@
 #include <stdbool.h>
-#include <math.h>
 #include "vim.h"
 
-#define MAX_SEQ_SIZE 10
+static uint16_t int_pow10(uint8_t x) {
+    if (x == 0) return 1;
+    uint16_t res = 1;
+    while(x-- > 0) res *= 10;
+    return res;
+}
 
 static const kc_t MODE_KEYS[] = { KC_D, KC_V, 0 };
-static const kc_t NAV_KEYS[] = { KC_0, KC_P0, KC_H, KC_J, KC_K, KC_L, KC_LEFT, KC_RIGHT, KC_UP, KC_DOWN, 
+static const kc_t NAV_KEYS[] = { KC_0, KC_P0, KC_H, KC_J, KC_K, KC_L, 
+                                 KC_LEFT, KC_RIGHT, KC_UP, KC_DOWN, 
                                  KC_B, KC_E, S(KC_G), S(KC_4), 0 };
 
 static bool has_keycode(kc_t kc, kc_t const * const arr) {
@@ -29,7 +34,7 @@ static uint16_t parse_num(vi_seq_t seq, uint8_t * i) {
     uint8_t len = s;
     while (is_kc_digit(seq[++len])) ++(*i);
     for (int8_t j=--len; j>=s; --j) {
-        num += kc2digit(seq[j]) * pow(10, len-j);
+        num += kc2digit(seq[j]) * int_pow10(len-j);
     }
     return num;
 }
@@ -48,7 +53,7 @@ bool parse_vi_seq(vi_seq_t seq, vi_cmd_t * cmd) {
     bool nav = false;
     kc_t prev = 0;
 
-    for (uint8_t i=0; i<MAX_SEQ_SIZE && seq[i] != 0; ++i) {
+    for (uint8_t i=0; i<VI_SEQ_SIZE && seq[i] != 0; ++i) {
         uint16_t keycode = seq[i];
         if (is_nav(keycode) || (is_kc_zero(keycode) && !is_kc_digit(prev))) {
             if (nav && !is_nav(prev)) return false;
@@ -72,12 +77,7 @@ bool parse_vi_seq(vi_seq_t seq, vi_cmd_t * cmd) {
     return true; 
 }
 
-bool is_complete(vi_cmd_t * const cmd) {
+bool is_vi_seq_complete(vi_cmd_t * const cmd) {
     return cmd->cmd > 0;
 }
 
-void clear_seq(vi_seq_t seq) {
-    for (uint8_t i=0; i<MAX_SEQ_SIZE; ++i) {
-        seq[i] = 0;
-    }
-}
