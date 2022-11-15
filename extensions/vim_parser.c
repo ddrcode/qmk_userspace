@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include "vim.h"
 
-static const kc_t MODE_KEYS[] = { KC_D, KC_G, KC_V, 0 };
+static const kc_t MODE_KEYS[] = { KC_C, KC_D, KC_G, KC_V, 0 };
 static const kc_t NAV_KEYS[] = { KC_0, KC_P0, KC_H, KC_J, KC_K, KC_L, 
                                  KC_LEFT, KC_RIGHT, KC_UP, KC_DOWN, 
                                  KC_B, KC_E, S(KC_G), S(KC_4), 0 };
@@ -43,11 +43,14 @@ static uint16_t parse_num(vi_seq_t seq, uint8_t * i) {
 
 static vi_mode_t kc2mode(kc_t kc) {
     switch(kc) {
-        case KC_D: return DELETE;
-        case KC_G: return JUMP;
-        case KC_V: return SELECTION;
+        case KC_C: return VI_CHANGE_MODE;
+        case KC_D: return VI_DELETE_MODE;
+        case KC_G: return VI_JUMP_MODE;
+        case KC_I: return VI_INSERT_MODE;
+        case KC_Y: return VI_YANK_MODE;
+        case KC_V: return VI_SELECTION_MODE;
     }
-    return NORMAL;
+    return VI_NORMAL_MODE;
 }
 
 bool parse_vi_seq(vi_seq_t seq, vi_cmd_t * cmd) {
@@ -68,7 +71,7 @@ bool parse_vi_seq(vi_seq_t seq, vi_cmd_t * cmd) {
             if (cmd) cmd->rep = parse_num(seq, &i);
         }
         else if (is_mode(keycode)) {
-            if (mod && kc2mode(keycode) == cmd->mode) {  // case for gg, yy, vv, dd
+            if (mod && kc2mode(keycode) == cmd->mode) {  // case for cc, gg, yy, vv, dd
                 cmd->keycode = keycode;
                 return true;
             }

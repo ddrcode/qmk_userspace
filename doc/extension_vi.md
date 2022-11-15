@@ -55,7 +55,7 @@ on keyboard level:
 
 There is a dedicated key code: `CKC_VI` that toggles VI mode.
 
-Other option is to call of the following functions: `toggle_vi_mode` (`CKC_VI` keycode
+Other option is to call one of the following functions: `toggle_vi_mode` (`CKC_VI` keycode
 calls this function), or `enter_vi_mode`.
 
 To quit VI mode, `exit_vi_mode` function can be called.

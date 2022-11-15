@@ -9,11 +9,13 @@
 typedef kc_t * const vi_seq_t;
 
 typedef enum {
-    NORMAL = 0,
-    SELECTION,
-    INSERT,
-    DELETE,
-    JUMP // g-key 
+    VI_NORMAL_MODE = 0,
+    VI_SELECTION_MODE,
+    VI_INSERT_MODE,
+    VI_DELETE_MODE,
+    VI_JUMP_MODE, // g-key 
+    VI_CHANGE_MODE,
+    VI_YANK_MODE
 } vi_mode_t;
 
 typedef struct {

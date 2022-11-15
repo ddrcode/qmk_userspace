@@ -38,7 +38,7 @@ typedef struct {
 
 bool vi_mode_on = false;
 
-static vi_state_t state = { MAC, NORMAL, false, false };
+static vi_state_t state = { MAC, VI_NORMAL_MODE, false, false };
 static kc_t vi_seq[VI_SEQ_SIZE];
 
 static inline uint16_t os_mod(void) {
@@ -47,7 +47,7 @@ static inline uint16_t os_mod(void) {
 
 static void change_mode(vi_mode_t mode) {
     if (state.mode == mode) return;
-    if (state.mode == SELECTION) TAP(KC_ESC);
+    if (state.mode == VI_SELECTION_MODE) TAP(KC_ESC);
     state.mode = mode;
 }
 
@@ -64,7 +64,7 @@ static void clear_vi_seq(void) {
 void vi_reset(void) {
     state.ctrl_down = false;
     state.shift_down = false;
-    change_mode(NORMAL);
+    change_mode(VI_NORMAL_MODE);
     clear_vi_seq();
     // clear_keyboard();
 }
@@ -124,11 +124,11 @@ VI_FN(eof) {
 }
 
 VI_FN(del_fn) {
-    if (state.mode == NORMAL) {
-        change_mode(DELETE);
+    if (state.mode == VI_NORMAL_MODE) {
+        change_mode(VI_DELETE_MODE);
         return;
     }
-    vi_bol(&(vi_cmd_t){ 1, NORMAL, KC_0 });
+    vi_bol(&(vi_cmd_t){ 1, VI_NORMAL_MODE, KC_0 });
     PRESS(KC_LEFT_SHIFT);
     REPEAT(TAP(KC_DOWN));
     RELEASE(KC_LEFT_SHIFT);
@@ -137,7 +137,7 @@ VI_FN(del_fn) {
 }
 
 VI_FN(yank) {
-    if (state.mode == SELECTION) RELEASE(KC_LEFT_SHIFT);
+    if (state.mode == VI_SELECTION_MODE) RELEASE(KC_LEFT_SHIFT);
     MODTAP(OS_MOD, KC_C);
     vi_reset();
 }
@@ -148,7 +148,7 @@ VI_FN(paste) {
 }
 
 VI_FN(mod_select) {
-    change_mode(SELECTION);
+    change_mode(VI_SELECTION_MODE);
     PRESS(KC_LSHIFT);
 }
 
@@ -181,7 +181,7 @@ VI_FN(new_line_up) {
 VI_FN(join_line) {
     REPEAT(
         FN_CALL(eol);
-        if (cmd->mode == NORMAL) TAP(KC_SPACE);
+        if (cmd->mode == VI_NORMAL_MODE) TAP(KC_SPACE);
         TAP(KC_DEL);
     );
 }
@@ -220,6 +220,7 @@ static kc_t vi_process_mods(kc_t keycode, bool pressed) {
 }
 
 static void vi_exec_cmd(vi_cmd_t * const cmd) {
+    if (cmd->mode > 0 && cmd->mode != VI_JUMP_MODE) PRESS(KC_LEFT_SHIFT);
     switch (cmd->keycode) {
 
         // navigation (hjkl)
@@ -239,7 +240,7 @@ static void vi_exec_cmd(vi_cmd_t * const cmd) {
         case KC_B: FN_CALL(back_word); break;
         case KC_E: FN_CALL(forward_word); break;
         case KC_W: FN_CALL(forward_next_word); break;
-        case KC_G: if (cmd->mode == JUMP) FN_CALL(bof); break;
+        case KC_G: if (cmd->mode == VI_JUMP_MODE) FN_CALL(bof); break;
         case S(KC_G): FN_CALL(eof); break;
 
         // edits (aioAIJO)
@@ -252,7 +253,7 @@ static void vi_exec_cmd(vi_cmd_t * const cmd) {
         case KC_S: FN_CALL(replace_then_edit); break;
         case S(KC_J): FN_CALL(join_line); break;
        
-        // delete (xXd)
+        // delete (xXdC)
         case KC_D: FN_CALL(del_fn); break;
         case KC_DEL:
         case KC_X: FN_CALL(del);  break;
@@ -274,6 +275,27 @@ static void vi_exec_cmd(vi_cmd_t * const cmd) {
         case KC_ESC: vi_reset(); break;
         case KC_DOT: FN_CALL(exec_last); break;
     }
+
+    if (cmd->mode > 0) {
+        if (cmd->mode != VI_JUMP_MODE) RELEASE(KC_LEFT_SHIFT);
+        switch(cmd->mode) {
+            case VI_YANK_MODE:
+                MODTAP(OS_MOD, KC_C);
+                TAP(KC_ESC);
+                break;
+
+            case VI_DELETE_MODE:
+                vi_cut();
+                break;
+
+            case VI_CHANGE_MODE:
+                vi_cut();
+                exit_vi_mode();
+                break;
+
+            default: break;
+        }
+    }
 }
 
 static void process_vi_seq(kc_t keycode) {
@@ -282,7 +304,7 @@ static void process_vi_seq(kc_t keycode) {
     uint8_t i = 0;
     while (i<VI_SEQ_SIZE && vi_seq[i++] > 0);
     vi_seq[--i] = keycode;
-    vi_cmd_t cmd = (vi_cmd_t){ .rep=1, .mode=NORMAL, .keycode=0 };
+    vi_cmd_t cmd = (vi_cmd_t){ .rep=1, .mode=VI_NORMAL_MODE, .keycode=0 };
     if (!parse_vi_seq(vi_seq, &cmd)) {
         clear_vi_seq();
         if (i > 0) process_vi_seq(keycode);
