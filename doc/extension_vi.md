@@ -8,16 +8,19 @@ layer and follows keyboard layout.
 ## Supported features
 
 ### Common features
-- Repeat n-times (i.e. `15dd`)
+- Repeat n-times (i.e. `15dd` or `d15d`)
 - Repeat last command (`.`)
+- Reset command or back to normal mode (`ESC`)
 
-### Cursor movement
+### Cursor movement (navigation)
+Navigation keys work in any mode (see "Modes" section below)
 - Cursor navigation (`h j k l`)
 - Word jumps (`w e b`)  (`w` is limited, works like `el`)
 - Beggining/end of line (`0 $`)
 - Beginning/end of file (`gg G`)
 
 ### Editing
+Editing keys work in Normal mode only
 - Append / insert (`a A i I`)
 - Append / prepend lines (`o O`)
 - Replace single character (`r`)
@@ -27,6 +30,9 @@ layer and follows keyboard layout.
 
 ### Modes
 - Visual selection (`v V`)
+- Delete (`d<navigation_key>` or `dd` for line deletion)
+- Change (`c<navigation_key>` or `cc` for changing entire line)
+- Yank (`y<navigation_key>` or `yy` for copying entire line or `y` in selection mode to copy selected text)
 
 ### File operations
 - Save (`:w`)

@@ -4,8 +4,12 @@
 static const kc_t MODE_KEYS[] = { KC_C, KC_D, KC_G, KC_V, 0 };
 static const kc_t NAV_KEYS[] = { KC_0, KC_P0, KC_H, KC_J, KC_K, KC_L, 
                                  KC_LEFT, KC_RIGHT, KC_UP, KC_DOWN, 
-                                 KC_B, KC_E, S(KC_G), S(KC_4), 0 };
-static const kc_t EDIT_KEYS[] = { KC_I, KC_A, KC_O, S(KC_O), S(KC_J), KC_DOT, KC_ESC, 0 };
+                                 KC_B, KC_E, KC_W, S(KC_G), S(KC_4), 
+                                 S(KC_6), S(KC_MINUS), 0 };
+static const kc_t EDIT_KEYS[] = { KC_I, S(KC_I), KC_A, S(KC_A), KC_O, S(KC_O),
+                                  S(KC_J), KC_S, KC_R, KC_DOT,
+                                  KC_BACKSPACE, KC_X, S(KC_X), KC_DEL, 
+                                  KC_U, C(KC_R), KC_P, 0 };
 
 static bool has_keycode(kc_t kc, kc_t const * const arr) {
     for (int i=0; arr[i] > 0; ++i) {
@@ -26,8 +30,14 @@ static inline bool is_mode(kc_t kc) {
     return has_keycode(kc, MODE_KEYS);
 }
 
-static inline bool is_cmd(kc_t kc) {
-    return is_nav(kc) || is_edit(kc);
+static inline bool is_cmd(kc_t keycode, vi_mode_t mode) {
+    if (is_nav(keycode) || (is_edit(keycode) && mode == VI_NORMAL_MODE)) return true;
+    if (is_mode(keycode)) return kc2mode(keycode) == mode;  // case for cc, gg, yy, vv, dd
+    switch(keycode) {
+        case S(KC_J): return mode == VI_JUMP_MODE;
+        case KC_Y: return mode == VI_SELECTION_MODE;
+    }
+    return false;
 }
 
 static uint16_t parse_num(vi_seq_t seq, uint8_t * i) {
@@ -41,7 +51,7 @@ static uint16_t parse_num(vi_seq_t seq, uint8_t * i) {
     return num;
 }
 
-static vi_mode_t kc2mode(kc_t kc) {
+vi_mode_t kc2mode(kc_t kc) {
     switch(kc) {
         case KC_C: return VI_CHANGE_MODE;
         case KC_D: return VI_DELETE_MODE;
@@ -61,8 +71,8 @@ bool parse_vi_seq(vi_seq_t seq, vi_cmd_t * cmd) {
 
     for (uint8_t i=0; i<VI_SEQ_SIZE && seq[i] != 0; ++i) {
         uint16_t keycode = seq[i];
-        if (is_cmd(keycode) || (is_kc_zero(keycode) && !is_kc_digit(prev))) { 
-            if (nav && !is_cmd(prev)) return false;
+        if (is_cmd(keycode, cmd->mode) || (is_kc_zero(keycode) && !is_kc_digit(prev))) { 
+            if (nav && !is_cmd(prev, cmd->mode)) return false;
             nav = true;
             if (cmd) cmd->keycode = keycode;
         } 
@@ -71,20 +81,16 @@ bool parse_vi_seq(vi_seq_t seq, vi_cmd_t * cmd) {
             if (cmd) cmd->rep = parse_num(seq, &i);
         }
         else if (is_mode(keycode)) {
-            if (mod && kc2mode(keycode) == cmd->mode) {  // case for cc, gg, yy, vv, dd
-                cmd->keycode = keycode;
-                return true;
-            }
             if (mod || nav) return false;
             mod = true;
-            if (cmd) cmd->mode = kc2mode(keycode);
+            cmd->mode = kc2mode(keycode);
         }
         else {
             return false;
         }
         prev = keycode;
     }
-    return true; 
+    return true;
 }
 
 bool is_vi_seq_complete(vi_cmd_t * const cmd) {

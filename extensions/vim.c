@@ -48,7 +48,7 @@ static inline uint16_t os_mod(void) {
 static void change_mode(vi_mode_t mode) {
     if (state.mode == mode) return;
     if (state.mode == VI_SELECTION_MODE) TAP(KC_ESC);
-    state.mode = mode;
+    state.mode = mode == VI_SELECTION_MODE ? mode : VI_NORMAL_MODE;
 }
 
 static void vi_cut(void) {
@@ -108,7 +108,7 @@ VI_FN(redo) {
 
 VI_FN(bol) {
     TAP(KC_HOME);
-    TAP(KC_HOME);
+    if (is_kc_zero(cmd->keycode)) TAP(KC_HOME);
 }
 
 VI_FN(eol) {
@@ -123,11 +123,8 @@ VI_FN(eof) {
     MODTAP(os_mod(), state.os == MAC ? KC_DOWN : KC_END);
 }
 
-VI_FN(del_fn) {
-    if (state.mode == VI_NORMAL_MODE) {
-        change_mode(VI_DELETE_MODE);
-        return;
-    }
+VI_FN(del_line) {
+    if (cmd->mode != VI_DELETE_MODE) return;
     vi_bol(&(vi_cmd_t){ 1, VI_NORMAL_MODE, KC_0 });
     PRESS(KC_LEFT_SHIFT);
     REPEAT(TAP(KC_DOWN));
@@ -219,8 +216,17 @@ static kc_t vi_process_mods(kc_t keycode, bool pressed) {
     return keycode;
 }
 
+static void vi_handle_mode(vi_cmd_t * const cmd, bool before_cmd) {
+    vi_mode_t mode = cmd->mode;
+    if ((mode == VI_CHANGE_MODE || mode == VI_DELETE_MODE || mode == VI_YANK_MODE) && mode != kc2mode(cmd->keycode)) {
+        if (before_cmd) PRESS(KC_LEFT_SHIFT);
+        else RELEASE(KC_LEFT_SHIFT);
+    }
+}
+
 static void vi_exec_cmd(vi_cmd_t * const cmd) {
-    if (cmd->mode > 0 && cmd->mode != VI_JUMP_MODE) PRESS(KC_LEFT_SHIFT);
+    vi_handle_mode(cmd, true);
+
     switch (cmd->keycode) {
 
         // navigation (hjkl)
@@ -233,9 +239,11 @@ static void vi_exec_cmd(vi_cmd_t * const cmd) {
         case KC_DOWN:
         case KC_J: FN_CALL(down); break;
 
-        // jumps (eb0$G)
+        // jumps (eb0$G_^)
         case KC_0: 
-        case KC_P0: FN_CALL(bol); break;
+        case KC_P0: 
+        case S(KC_6):
+        case S(KC_MINUS): FN_CALL(bol); break;
         case S(KC_4): FN_CALL(eol); break;
         case KC_B: FN_CALL(back_word); break;
         case KC_E: FN_CALL(forward_word); break;
@@ -254,7 +262,7 @@ static void vi_exec_cmd(vi_cmd_t * const cmd) {
         case S(KC_J): FN_CALL(join_line); break;
        
         // delete (xXdC)
-        case KC_D: FN_CALL(del_fn); break;
+        case KC_D: FN_CALL(del_line); break;
         case KC_DEL:
         case KC_X: FN_CALL(del);  break;
         case KC_BSPC:
@@ -271,13 +279,12 @@ static void vi_exec_cmd(vi_cmd_t * const cmd) {
         // VI modes (v)
         case KC_V: FN_CALL(mod_select); break;
         
-        // other (Esc) 
-        case KC_ESC: vi_reset(); break;
+        // other (.)
         case KC_DOT: FN_CALL(exec_last); break;
     }
 
     if (cmd->mode > 0) {
-        if (cmd->mode != VI_JUMP_MODE) RELEASE(KC_LEFT_SHIFT);
+        vi_handle_mode(cmd, false);
         switch(cmd->mode) {
             case VI_YANK_MODE:
                 MODTAP(OS_MOD, KC_C);
@@ -300,6 +307,10 @@ static void vi_exec_cmd(vi_cmd_t * const cmd) {
 
 static void process_vi_seq(kc_t keycode) {
     if (!is_kc_printable_char(keycode & 0xff) && !is_kc_arrow(keycode & 0xff)) return;
+    if (keycode == KC_ESC) {
+        vi_reset();
+        return;
+    }
 
     uint8_t i = 0;
     while (i<VI_SEQ_SIZE && vi_seq[i++] > 0);
@@ -311,6 +322,7 @@ static void process_vi_seq(kc_t keycode) {
     }
     else if (is_vi_seq_complete(&cmd)) {
         printf("CMD is complete rep=%d, keycode=%d, mode=%d\n", cmd.rep, cmd.keycode, cmd.mode);
+        change_mode(cmd.mode);
         vi_exec_cmd(&cmd);
         if (cmd.keycode != KC_DOT) state.last_cmd = cmd;
         clear_vi_seq();

@@ -29,6 +29,7 @@ void enter_vi_mode(void);
 void exit_vi_mode(void);
 void toggle_vi_mode(void);
 
+vi_mode_t kc2mode(kc_t kc);
 bool parse_vi_seq(vi_seq_t seq, vi_cmd_t * cmd);
 bool process_record_vim(uint16_t keycode, keyrecord_t *record);
 bool is_vi_seq_complete(vi_cmd_t * const cmd);
