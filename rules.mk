@@ -5,7 +5,6 @@ AUTO_SHIFT_ENABLE = no
 CAPS_WORD_ENABLE = no
 SEND_STRING_ENABLE = yes
 KEY_OVERRIDE_ENABLE = yes
-# KEYMAP_INTROSPECTION_ENABLE = no
 # BOOTMAGIC_ENABLE = no
 # TERMINAL_ENABLE = yes
 
@@ -42,6 +41,13 @@ ifdef KEY_OVERRIDE_ENABLE
         $(info [ddrcode/rules.mk] including key_overrides.c)
         INTROSPECTION_KEYMAP_C = features/key_overrides.c
     endif
+endif
+
+ifeq ($(strip $(KEYBOARD)),keychron/q10/ansi_encoder)
+    $(info [ddrcode/rules.mk] enabling raw mode)
+    RAW_ENABLE = yes
+    LTO_ENABLE = no
+    SRC += features/raw.c
 endif
 
 ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)
