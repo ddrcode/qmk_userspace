@@ -33,7 +33,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(wpm_buff);
 #endif
                 break;
-#ifdef DDR_BIG_MEMORY  
+#ifdef DDR_BIG_MEMORY
             case CKC_LL:
                 SEND_STRING("ls -al\n");
                 break;
@@ -47,6 +47,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 void keyboard_post_init_user(void) {
+    // Key overrides are automatically initialized by QMK
+    
     #ifdef RGB_MATRIX_ENABLE
     rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
     rgb_matrix_sethsv_noeeprom(HSV_OFF);

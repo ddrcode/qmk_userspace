@@ -15,7 +15,7 @@
 #ifdef RGB_MATRIX_ENABLE
 void rgb_matrix_indiciate_modifiers(uint8_t mods, uint8_t led_min, uint8_t led_max);
 
-void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     switch (get_highest_layer(layer_state | default_layer_state)) {
         case QWERTY:
             rgb_matrix_set_color_all(0xFF, 0x00, 0x00);
@@ -38,6 +38,8 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     if (mods) {
         rgb_matrix_indiciate_modifiers(mods, led_min, led_max);
     }
+
+    return false;
 }
 
 void rgb_matrix_indiciate_modifiers(uint8_t mods, uint8_t led_min, uint8_t led_max) {

@@ -9,7 +9,7 @@
         [ "DDR_Q3_EMPTY" ],
         [ "DDR_Q3_SYMBOLS" ]
     ],
-    "layout": "LAYOUT_ansi_87_wrapper",
+    "layout": "LAYOUT_tkl_ansi_wrapper",
     "notes": "",
     "version": 1
 }

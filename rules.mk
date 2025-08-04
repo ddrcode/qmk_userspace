@@ -1,10 +1,11 @@
-AUDIO_ENABLE = no
+AUDIO_ENABLE = norul
 TAP_DANCE_ENABLE = no
 KEY_LOCK_ENABLE = no
 AUTO_SHIFT_ENABLE = no
 CAPS_WORD_ENABLE = no
 SEND_STRING_ENABLE = yes
 KEY_OVERRIDE_ENABLE = yes
+# KEYMAP_INTROSPECTION_ENABLE = no
 # BOOTMAGIC_ENABLE = no
 # TERMINAL_ENABLE = yes
 
@@ -19,7 +20,7 @@ ifneq ($(filter $(strip $(KEYBOARD)),converter/usb_usb/hasu idobao/id75/v2),)
     CONSOLE_ENABLE = no
     EXTRAKEY_ENABLE = no
     SPACE_CADET_ENABLE = no
-    GRAVE_ESC_ENABLE = no 
+    GRAVE_ESC_ENABLE = no
     MAGIC_ENABLE = no
     RGB_MATRIX_ENABLE = no  # for idobao 75
     EXTRAFLAGS += -flto
@@ -35,6 +36,13 @@ endif
 
 SRC += features/osm.c
 SRC += ddrcode.c
+
+ifdef KEY_OVERRIDE_ENABLE
+    ifeq ($(strip $(KEY_OVERRIDE_ENABLE)), yes)
+        $(info [ddrcode/rules.mk] including key_overrides.c)
+        INTROSPECTION_KEYMAP_C = features/key_overrides.c
+    endif
+endif
 
 ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)
     $(info [ddrcode/rules.mk] including rgb_matrix.c)
@@ -52,11 +60,6 @@ endif
 ifneq ("$(wildcard $(USER_PATH)/features/secrets.c)", "")
     $(info [ddrcode/rules.mk] including secrets.c)
     SRC += features/secrets.c
-endif
-
-ifeq ($(strip $(KEY_OVERRIDE_ENABLE)), yes)
-    $(info [ddrcode/rules.mk] including key_overrides.c)
-    SRC += features/key_overrides.c
 endif
 
 ifeq ($(strip $(WPM_ENABLE)), yes)
