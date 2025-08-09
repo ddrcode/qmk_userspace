@@ -1,4 +1,4 @@
-AUDIO_ENABLE = norul
+AUDIO_ENABLE = no
 TAP_DANCE_ENABLE = no
 KEY_LOCK_ENABLE = no
 AUTO_SHIFT_ENABLE = no
@@ -31,6 +31,7 @@ else
     EXTRAKEY_ENABLE = yes
     COMMAND_ENABLE = yes
     DDR_BIG_MEMORY = yes
+    OPT_DEFS += -DDDR_BIG_MEMORY
 endif
 
 SRC += features/osm.c
@@ -47,7 +48,7 @@ ifeq ($(strip $(KEYBOARD)),keychron/q10/ansi_encoder)
     $(info [ddrcode/rules.mk] enabling raw mode)
     RAW_ENABLE = yes
     LTO_ENABLE = no
-    SRC += features/raw.c
+    SRC += features/charon.c
 endif
 
 ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)

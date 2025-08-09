@@ -1,3 +1,4 @@
+#include "wpm.h"
 #include "print.h"
 #include "ddrcode.h"
 
@@ -13,9 +14,9 @@ typedef struct {
 } wpmstats_t;
 
 static wpmstats_t wpmstats[] = {
-    { 0, 0, 0, 0, "qwerty" }, 
-    { 0, 0, 0, 0, "colemak" } 
-}; 
+    { 0, 0, 0, 0, "qwerty" },
+    { 0, 0, 0, 0, "colemak" }
+};
 
 static void print_wpm(wpmstats_t const * const stats) {
     printf(
