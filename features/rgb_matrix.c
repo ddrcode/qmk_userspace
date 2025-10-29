@@ -14,6 +14,8 @@
 
 #ifdef RGB_MATRIX_ENABLE
 void rgb_matrix_indiciate_modifiers(uint8_t mods, uint8_t led_min, uint8_t led_max);
+static inline uint8_t modmask_for_kc(uint16_t kc);
+
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     switch (get_highest_layer(layer_state | default_layer_state)) {
@@ -43,20 +45,53 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 }
 
 void rgb_matrix_indiciate_modifiers(uint8_t mods, uint8_t led_min, uint8_t led_max) {
-    const uint8_t layer = get_highest_layer(layer_state | default_layer_state);
-    /*if (mods & MOD_MASK_SHIFT) {
-        rgb_matrix_set_color(63, 0xFF, 0xFF, 0x20);
-        rgb_matrix_set_color(74, 0xFF, 0xFF, 0x20);
-    }*/
+    uint8_t layer = get_highest_layer(layer_state | default_layer_state);
 
     for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
         for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-            uint8_t index = g_led_config.matrix_co[row][col];
-            const uint16_t keycode = keymap_key_to_keycode(layer, (keypos_t){col,row});
-            if (index >= led_min && index <= led_max && index != NO_LED && (MOD_BIT(keycode) & mods)) {
-                rgb_matrix_set_color(index, RGB_GREEN);
+            uint8_t led_index = g_led_config.matrix_co[row][col];
+            if (led_index == NO_LED || led_index < led_min || led_index > led_max) continue;
+
+            // ✅ correct order: { .row = row, .col = col }
+            uint16_t kc = keymap_key_to_keycode(layer, (keypos_t){ .row = row, .col = col });
+
+            // highlight only if this position is a *modifier key* and that mod is currently active
+            uint8_t need = modmask_for_kc(kc);
+            if (need && (mods & need)) {
+                rgb_matrix_set_color(led_index, RGB_GREEN);
             }
         }
     }
 }
+
+static inline uint8_t modmask_for_kc(uint16_t kc) {
+    switch (kc) {
+        case KC_LCTL: return MOD_BIT(KC_LCTL);
+        case KC_RCTL: return MOD_BIT(KC_RCTL);
+        case KC_LSFT: return MOD_BIT(KC_LSFT);
+        case KC_RSFT: return MOD_BIT(KC_RSFT);
+        case KC_LGUI: return MOD_BIT(KC_LGUI);
+        case KC_RGUI: return MOD_BIT(KC_RGUI);
+        case KC_LALT: return MOD_BIT(KC_LALT);
+        case KC_RALT: return MOD_BIT(KC_RALT);
+        default: break;
+    }
+    // Treat mod-tap as its modifier role for highlighting
+    if (IS_QK_MOD_TAP(kc)) {
+        uint8_t m = (uint8_t)(kc & 0xFF);           // low byte carries mods
+        // normalize L/R pairs to full masks
+        uint8_t out = 0;
+        if (m & MOD_MASK_CTRL)  out |= MOD_MASK_CTRL;
+        if (m & MOD_MASK_SHIFT) out |= MOD_MASK_SHIFT;
+        if (m & MOD_MASK_GUI)   out |= MOD_MASK_GUI;
+        if (m & MOD_BIT(KC_LALT)) out |= MOD_BIT(KC_LALT);
+        if (m & MOD_BIT(KC_RALT)) out |= MOD_BIT(KC_RALT);
+        return out;
+    }
+    if (IS_QK_ONE_SHOT_MOD(kc)) {
+        return (uint8_t)(kc & 0xFF);
+    }
+    return 0;
+}
+
 #endif

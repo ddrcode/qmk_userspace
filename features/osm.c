@@ -1,5 +1,3 @@
-#include "quantum.h"
-
 /**
  * This customization of OSM functionality adds the following features:
  * 1. Option to switch off OSM modifier, by pressing 2nd time on the same key
@@ -7,70 +5,78 @@
  *    it differentiates between Alt keys (left Alt vs AltGr)
  */
 
-/**
- * Holds the flags of previously tapped modifiers. 
- * Bit fields (left-to-right)
- * 7: AltGr (Right Alt)
- * 6: Unused
- * 5: Unused
- * 4: Unused
- * 3: Left Alt
- * 2: Gui (Left or right)
- * 1: Shift (Left or right)
- * 0: Ctrl (Left or right)
+#include QMK_KEYBOARD_H
+
+// Group flags for our local “armed” OSM toggles
+enum {
+    OSMG_CTRL  = (1 << 0),
+    OSMG_SHIFT = (1 << 1),
+    OSMG_GUI   = (1 << 2),
+    OSMG_LALT  = (1 << 3),
+    OSMG_RALT  = (1 << 7),
+};
+static uint8_t osm_groups_armed = 0;
+
+/* Map an OSM keycode to:
+ *  - a group bit (our local toggle bucket)
+ *  - the actual QMK 8-bit mod mask to add/remove
+ * Returns group_bit=0 when the keycode isn’t an OSM we care about.
  */
-static uint8_t osm_tap_flags = 0;
+static void osm_keycode_to_group_and_mask(uint16_t keycode, uint8_t *group_bit, uint8_t *mask8) {
+    *group_bit = 0;
+    *mask8     = 0;
 
-static const uint8_t tapflags_mask = 0b10001111;
+    if (keycode < QK_ONE_SHOT_MOD || keycode > QK_ONE_SHOT_MOD_MAX) return;
 
+    // OSM encodes its modifier mask in the low byte — use official masks, no guessing.
+    const uint8_t m = (uint8_t)(keycode & 0xFF);
 
-// keycode encodes mods on 5 bits. Convertion to osm_tap_flags
-static uint8_t keycode2tapflags(uint16_t keycode) {
-    const uint8_t mod = keycode & 0x1f; // modifier flags only (last 5 bits)
-    if (mod == 0b00011000) return 0b10000000; // AltGr
-    return mod & 0b00001111; // all other modifiers
+    if (m & MOD_MASK_CTRL)   { *group_bit = OSMG_CTRL;  *mask8 = MOD_MASK_CTRL;  return; }
+    if (m & MOD_MASK_SHIFT)  { *group_bit = OSMG_SHIFT; *mask8 = MOD_MASK_SHIFT; return; }
+    if (m & MOD_MASK_GUI)    { *group_bit = OSMG_GUI;   *mask8 = MOD_MASK_GUI;   return; }
+    if (m & MOD_BIT(KC_LALT)){ *group_bit = OSMG_LALT;  *mask8 = MOD_BIT(KC_LALT); return; }
+    if (m & MOD_BIT(KC_RALT)){ *group_bit = OSMG_RALT;  *mask8 = MOD_BIT(KC_RALT); return; }
 }
 
-
-// OSM callback encodes mods on 8 bits. Convertion to osm_tap_flags
-static uint8_t osmmods2tapflags(uint8_t osmmods) {
-    return (osmmods & tapflags_mask) | ((osmmods & ~tapflags_mask) >> 4);
-}
-
-
-// Required for cases when OSM state changes programatically
+/* Keep our local “armed” flags in sync if something else changes oneshot mods. */
 void oneshot_mods_changed_user(uint8_t mods) {
-    osm_tap_flags &= osmmods2tapflags(mods);
+    osm_groups_armed = 0;
+    if (mods & MOD_MASK_CTRL)    osm_groups_armed |= OSMG_CTRL;
+    if (mods & MOD_MASK_SHIFT)   osm_groups_armed |= OSMG_SHIFT;
+    if (mods & MOD_MASK_GUI)     osm_groups_armed |= OSMG_GUI;
+    if (mods & MOD_BIT(KC_LALT)) osm_groups_armed |= OSMG_LALT;
+    if (mods & MOD_BIT(KC_RALT)) osm_groups_armed |= OSMG_RALT;
 }
 
-
-// to be invoked from process_record_user function (see ddrcode.c)
+/* Call from process_record_user() BEFORE other consumers. */
 bool process_record_user_osm(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) return true;
 
-    // reset state on non-OSM key press
-    if (keycode <= QK_ONE_SHOT_MOD || keycode > QK_ONE_SHOT_MOD_MAX) {
-        osm_tap_flags = 0;
+    // Non-OSM key: commit/clear pending armed state (let QMK handle normal OSM behavior)
+    if (keycode < QK_ONE_SHOT_MOD || keycode > QK_ONE_SHOT_MOD_MAX) {
+        osm_groups_armed = 0;
         return true;
     }
 
-    const uint8_t mod = keycode2tapflags(keycode);
+    uint8_t group_bit = 0, mask8 = 0;
+    osm_keycode_to_group_and_mask(keycode, &group_bit, &mask8);
+    if (!group_bit) return true;  // unknown/unhandled OSM → let stock behavior run
 
-    // dont toggle on multi-tap
+    // Don’t toggle on multi-tap; let QMK’s tap-toggle/timeouts do their thing
     if (record->tap.count > 1) {
-        osm_tap_flags &= ~mod;
+        osm_groups_armed &= ~group_bit;
         return true;
     }
 
-    // toggle if flag is present and stop tap processing
-    if (osm_tap_flags & mod) {
-        del_oneshot_mods(mod | ((mod << 4) & ~tapflags_mask));
-        osm_tap_flags &= ~mod;
-        return false;
+    // If this group is already armed (e.g., you pressed the other side), pressing any member cancels it
+    if (osm_groups_armed & group_bit) {
+        del_oneshot_mods(mask8);       // remove those OSM mods (full 8-bit mask)
+        osm_groups_armed &= ~group_bit;
+        return false;                  // we handled it; don’t pass the key on
     }
 
-    // first OSM tap - set the flag and continue
-    osm_tap_flags |= mod;   
+    // First tap for this group: arm it and let stock OSM add the mod
+    osm_groups_armed |= group_bit;
     return true;
 }
 
