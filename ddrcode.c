@@ -25,7 +25,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     bool pressed = record->event.pressed;
     switch (keycode) {
-        case KC_F20:
         case DDR_BL:
             if (pressed) {
                 uprintf("Hitting DDR_BL %d, %d, %d", default_layer_state, QWERTY, COLEMAK);
@@ -33,30 +32,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
 
-        case KC_F21:
 #ifdef RAW_ENABLE
         case DDR_CHARON:
             if (pressed) charon_send_mode_toggle();
-#endif
             return false;
+#endif
 
-        case KC_F22:
-#ifdef DDR_BIG_MEMORY
+#ifdef SEND_STRING_ENABLE
         case DDR_LL:
             if (pressed) SEND_STRING("ls -al\n");
+            return false;
 #endif
 
-            return false;
 
-        case KC_F23:
 #ifdef WPM_ENABLE
         case DDR_WPM:
             if (pressed) {
                 itoa(get_current_wpm(), wpm_buff, 10);
                 SEND_STRING(wpm_buff);
             }
-#endif
             return false;
+#endif
 
     }
 
